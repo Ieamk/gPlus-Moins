@@ -8,7 +8,7 @@ J'ai essayé de revisiter un maximum ce jeu, en lui ajoutant diverses modes de j
 ## Modes de jeu
 ### Solo
 > Ce mode de jeu a été réalisé à partir des idées trouvées sur le TP OpenClassrooms, cité plus haut
-  * Comment ça marche ?
+  * **Comment ça marche ?**
   
   Il vous suffit de choisir le mode de jeu Solo, en tappant "*1*" lors de la sélection des modes de jeu.
   Ensuite, choisissez une difficulté, sachant que plus c'est difficile, plus la tranche des possibilités sera grande !
@@ -19,7 +19,7 @@ J'ai essayé de revisiter un maximum ce jeu, en lui ajoutant diverses modes de j
 
 ### Meister Mode
 > Ce mode de jeu a été réalisé à partir des idées trouvées sur le TP OpenClassrooms, cité plus haut
-  * Comment ça marche ?
+  * **Comment ça marche ?**
   
   Il vous suffit de choisir le mode de jeu Meister Mode, en tappant "*2*" lors de la sélection des modes de jeu.
   Ce mode de jeu comprends deux joueurs. Le joueur 1, nommé le "maître de jeu", choisi un nombre mystère et défini un nombre de coups maximum pour le trouver.
@@ -28,7 +28,7 @@ J'ai essayé de revisiter un maximum ce jeu, en lui ajoutant diverses modes de j
 
 ### Duel
 > Ce mode de jeu a été pensé par moi-même
-  * Comment ça marche ?
+  * **Comment ça marche ?**
   
   Il vous suffit de choisir le mode de jeu Duel, en tappant "*3*" lors de la sélection des modes de jeu.
   Ce mode de jeu comprends deux joueurs. Chaque joueur défini un nombre mystère. Chaqun leur tour, les joueurs doivent tanter de trouver le nombre mystère de l'autre.
