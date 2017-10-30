@@ -9,17 +9,24 @@
 #include <time.h>
 #define MIN 1
 
+/*
+    Les fonctions
+*/
+/*      MODE SOLO    */
+void solo(void); /* Fonction du jeu en solo */
+/*      MEISTER MODE    */
+void meister(void); /* Fonction du jeu en Meister Mode */
+/*      MODE DUEL    */
+void duel(void); /* Fonction du jeu en mode Duel ! */
+void duel_control(int, int *, int *, int *, int *, int *, int *, int *); /* Fonction de controle du mode DUEL */
+void duel_start(int *, int *, int *); /* Fonction de lancement du duel */
+void duel_win(int, int, int); /* Fonction lorsqu'un joueur gagne le duel */
+/*   FIN MODE DUEL   */
+
 int main(void)
 {
-    /*
-    *   Définition des fonctions et des variables
-    */
-    /* Les fonctions */
-    void solo(void); /* Fonction du jeu en solo */
-    void meister(void); /* Fonction du jeu en Meister Mode */
-    void duel(void); /* Fonction du jeu en mode Duel ! */
-    /* Les variables */
     int mode; /* Mode de jeu que l'utilisateur a choisi */
+
     /*
     *   Début du programme
     */
@@ -254,10 +261,6 @@ void duel(void)
 		mystère de l'autre joueur, s'il échoue, c'est à l'autre joueur d'essayer de deviner son nombre mystère, etc...
 		Lorsqu'un joueur trouve le nombre mystère de l'autre joueur, la partie s'arrête et il a gagné.
 	*/
-	void duel_start(int * nb1, int * nb2, int * start); /* Fonction de lancement du duel */
-    void duel_win(int winner, int mystere, int essai); /* Fonction lorsqu'un joueur gagne le duel */
-    /* Fonction de controle, pour controler le nombre transmit par l'utilisateur, et lancer les fonctions duel_start ou duel_win */
-    void duel_control(int joueur, int * x, int * nb1, int * nb2, int * essai1, int * essai2, int * start, int * continuer, void (* duel_start)(int, int, int), void (* duel_win)(int, int, int));
     int nb1; /* Nombre mystère du joueur 1 */
     int nb2; /* Nombre mystère du joueur 2 */
    	int start; /* "Id" du joueur qui va commencer à jouer */
@@ -286,91 +289,19 @@ void duel(void)
     	{
 	    	if (i % 2 == 1) /* Si i est impair, alors c'est le tour du joueur 1 */
 	    	{
-		    	printf("Joueur 1, quel est le nombre ? "); /* On demande le nombre au joueur 1 */
-		    	scanf("%d", &x);
-		    	if (x > nb2)
-		    	{
-		    		printf("C'est moins !\n");
-		    		essai1++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
-		    	} else if (x < nb2)
-		    	{
-		    		printf("C'est plus !\n");
-		    		essai1++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
-		    	} else if (x == nb2)
-		    	{
-                    duel_win(1, nb2, essai1);
-					printf("Vous voulez rejouer ? (Y/N) ");
-					scanf(" %c", &reponse_continu);
-		            if (reponse_continu == 'y' || reponse_continu == 'Y')
-		            {
-						/* On relance un duel */
-						duel_start(&nb1, &nb2, &start);
-		                essai1 = essai2 = 0; /* Réinitialisation de la variable du nombre d'essais */
-		                continuer = 1;
-		            } else if (reponse_continu == 'n' || reponse_continu == 'N'){
-		                continuer = 0;
-		            }
-		    	}
+                duel_control(1, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer);
 	    	} else if (i % 2 == 0) /* Si i est pair, c'est au tour du joueur 2 */
 	    	{
-	    		printf("Joueur 2, quel est le nombre ? "); /* On demande le nombre au joueur 2 */
-				scanf("%d", &x);
-		    	if (x > nb1)
-		    	{
-		    		printf("C'est moins !\n");
-		    		essai2++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
-		    	} else if (x < nb1)
-		    	{
-		    		printf("C'est plus !\n");
-		    		essai2++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
-		    	} else if (x == nb1)
-		    	{
-                    duel_win(2, nb1, essai2);
-					printf("Vous voulez rejouer ? (Y/N) ");
-					scanf(" %c", &reponse_continu);
-		            if (reponse_continu == 'y' || reponse_continu == 'Y')
-		            {
-						/* On relance un duel */
-						duel_start(&nb1, &nb2, &start);
-		                essai1 = essai2 = 0; /* Réinitialisation de la variable du nombre d'essais */
-		                continuer = 1;
-		            } else if (reponse_continu == 'n' || reponse_continu == 'N'){
-		                continuer = 0;
-		            }
-		    	}
+                duel_control(2, &x, &nb2, &nb1, &essai2, &essai1, &start, &continuer);
 	    	}
 	    } else if (start == 2) /* Sinon, si c'est le joueur 2 qui doit commencer */
     	{
 	    	if (i % 2 == 1) /* Si i est impair, c'est le tour du joueur 2 */
 	    	{
-		    	printf("Joueur 2, quel est le nombre ? ");
-		    	scanf("%d", &x);
-		    	if (x > nb1)
-		    	{
-		    		printf("C'est moins !\n");
-		    		essai2++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
-		    	} else if (x < nb1)
-		    	{
-		    		printf("C'est plus !\n");
-		    		essai2++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
-		    	} else if (x == nb1)
-		    	{
-                    duel_win(2, nb1, essai2);
-					printf("Vous voulez rejouer ? (Y/N) ");
-					scanf(" %c", &reponse_continu);
-		            if (reponse_continu == 'y' || reponse_continu == 'Y')
-		            {
-						/* On relance un duel */
-						duel_start(&nb1, &nb2, &start);
-		                essai1 = essai2 = 0; /* Réinitialisation de la variable du nombre d'essais */
-		                continuer = 1;
-		            } else if (reponse_continu == 'n' || reponse_continu == 'N'){
-		                continuer = 0;
-		            }
-		    	}
+                duel_control(2, &x, &nb2, &nb1, &essai2, &essai1, &start, &continuer);
 	    	} else if (i % 2 == 0) /* Si i est pair, c'est le tour du joueur 1 */
 	    	{
-	    		void duel_control(1, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer, &duel_start, &duel_win);
+	    		duel_control(1, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer);
 	    	}
 	    }
 
@@ -441,7 +372,7 @@ void duel_win(int winner, int mystere, int essai)
 /*
 	Fonction de control si le nombre que le joueur entre est le bon
 */
-void duel_control(int joueur, int * x, int * nb1, int * nb2, int * essai1, int * essai2, int * start, int * continuer, void (* duel_start)(int, int, int), void (* duel_win)(int, int, int))
+void duel_control(int joueur, int * x, int * nb1, int * nb2, int * essai1, int * essai2, int * start, int * continuer)
 {
 	char reponse_continu; /* Réponse des joueurs pour continuer ou non */
 	printf("Joueur %d, quel est le nombre ? ", joueur);
@@ -456,13 +387,13 @@ void duel_control(int joueur, int * x, int * nb1, int * nb2, int * essai1, int *
 		*essai1++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
 	} else if (*x == *nb2)
 	{
-		(* duel_win)(joueur, *nb2, *essai1);
+        duel_win(joueur, *nb2, *start);
 		printf("Vous voulez rejouer ? (Y/N) ");
 		scanf(" %c", &reponse_continu);
 		if (reponse_continu == 'y' || reponse_continu == 'Y')
 		{
+            duel_start(&*nb1, &*nb2, &*start);
 			/* On relance un duel */
-			(* duel_start)(*nb1, *nb2, *start);
 			*essai1 = *essai2 = 0; /* Réinitialisation de la variable du nombre d'essais */
 			*continuer = 1;
 		} else if (reponse_continu == 'n' || reponse_continu == 'N'){
