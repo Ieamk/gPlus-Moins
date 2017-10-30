@@ -254,6 +254,10 @@ void duel(void)
 		mystère de l'autre joueur, s'il échoue, c'est à l'autre joueur d'essayer de deviner son nombre mystère, etc...
 		Lorsqu'un joueur trouve le nombre mystère de l'autre joueur, la partie s'arrête et il a gagné.
 	*/
+	void duel_start(int * nb1, int * nb2, int * start); /* Fonction de lancement du duel */
+    void duel_win(int winner, int mystere, int essai); /* Fonction lorsqu'un joueur gagne le duel */
+    /* Fonction de controle, pour controler le nombre transmit par l'utilisateur, et lancer les fonctions duel_start ou duel_win */
+    void duel_control(int joueur, int * x, int * nb1, int * nb2, int * essai1, int * essai2, int * start, int * continuer, void (* duel_start)(int, int, int), void (* duel_win)(int, int, int));
     int nb1; /* Nombre mystère du joueur 1 */
     int nb2; /* Nombre mystère du joueur 2 */
    	int start; /* "Id" du joueur qui va commencer à jouer */
@@ -272,23 +276,8 @@ void duel(void)
     printf("|_______/  \\______/  |_______||_______|   (__) \n\n\n\n");
 	/* Fin de l'art incroyable ! */
 	printf("Youhouuuuuu ! C'est l'heure du du-du-du-du-du-duel !\n");
-	printf("Joueur 1, choisissez un nombre mystere : ");
-	scanf("%d", &nb1);
-	printf("Joueur 2, choisissez un nombre mystere : ");
-	scanf("%d", &nb2);
-	printf("\n\n\n\n\nTres bien ! Je vais tirer au sort celui qui va commencer !\n");
-	printf("...\n");
-	printf("...\n");
-	srand(time(NULL)); /* Initialisation du générateur de nombres aléatoires */
-	start = (rand() % (2 - 1 + 1)) + 1; /* Génération du nombre aléatoire entre 1 et 2, ce nombre déterminera celui qui va commencer */
-	printf("C'est bon ! Celui qui vas commencer sera... ... ");
-	if (start == 1)
-	{
-		printf("le Joueur 1 !\n");
-	} else if (start == 2)
-	{
-		printf("le Joueur 2 !\n");
-	}
+	/* On lance un duel avec la fonction duel_start */
+	duel_start(&nb1, &nb2, &start);
     /* Lancement de la boucle infinie, jusqu'à que le joueur n°2 trouve le nombre mystère */
     while(continuer == 1)
     {
@@ -309,28 +298,13 @@ void duel(void)
 		    		essai1++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
 		    	} else if (x == nb2)
 		    	{
-		    		printf("Le joueur 1 a gagne ! Le nombre mystere etait : %d, il l'a trouve en %d coups ! Bravo !\n", nb2, essai1);
+                    duel_win(1, nb2, essai1);
 					printf("Vous voulez rejouer ? (Y/N) ");
 					scanf(" %c", &reponse_continu);
 		            if (reponse_continu == 'y' || reponse_continu == 'Y')
 		            {
-		                /* On réinvite le joueur 1 à définir un nombre mystère et un nombre de coups */
-						printf("Joueur 1, choisissez un nombre mystere : ");
-						scanf("%d", &nb1);
-						printf("Joueur 2, choisissez un nombre mystere : ");
-						scanf("%d", &nb2);
-						printf("\n\n\n\n\nTres bien ! Je vais tirer au sort celui qui va commencer !\n");
-						printf("...\n");
-						printf("...\n");
-						start = (rand() % (2 - 1 + 1)) + 1; /* Génération du nombre aléatoire entre 1 et 2, ce nombre déterminera celui qui va commencer */
-						printf("C'est bon ! Celui qui vas commencer sera... ... ");
-						if (start == 1)
-						{
-							printf("le Joueur 1 !\n");
-						} else if (start == 2)
-						{
-							printf("le Joueur 2 !\n");
-						}
+						/* On relance un duel */
+						duel_start(&nb1, &nb2, &start);
 		                essai1 = essai2 = 0; /* Réinitialisation de la variable du nombre d'essais */
 		                continuer = 1;
 		            } else if (reponse_continu == 'n' || reponse_continu == 'N'){
@@ -351,28 +325,13 @@ void duel(void)
 		    		essai2++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
 		    	} else if (x == nb1)
 		    	{
-		    		printf("Le joueur 2 a gagne ! Le nombre mystere etait : %d, il l'a trouve en %d coups ! Bravo !\n", nb1, essai2);
+                    duel_win(2, nb1, essai2);
 					printf("Vous voulez rejouer ? (Y/N) ");
 					scanf(" %c", &reponse_continu);
 		            if (reponse_continu == 'y' || reponse_continu == 'Y')
 		            {
-		                /* On réinvite le joueur 1 à définir un nombre mystère et un nombre de coups */
-						printf("Joueur 1, choisissez un nombre mystere : ");
-						scanf("%d", &nb1);
-						printf("Joueur 2, choisissez un nombre mystere : ");
-						scanf("%d", &nb2);
-						printf("\n\n\n\n\nTres bien ! Je vais tirer au sort celui qui va commencer !\n");
-						printf("...\n");
-						printf("...\n");
-						start = (rand() % (2 - 1 + 1)) + 1; /* Génération du nombre aléatoire entre 1 et 2, ce nombre déterminera celui qui va commencer */
-						printf("C'est bon ! Celui qui vas commencer sera... ... ");
-						if (start == 1)
-						{
-							printf("le Joueur 1 !\n");
-						} else if (start == 2)
-						{
-							printf("le Joueur 2 !\n");
-						}
+						/* On relance un duel */
+						duel_start(&nb1, &nb2, &start);
 		                essai1 = essai2 = 0; /* Réinitialisation de la variable du nombre d'essais */
 		                continuer = 1;
 		            } else if (reponse_continu == 'n' || reponse_continu == 'N'){
@@ -396,28 +355,13 @@ void duel(void)
 		    		essai2++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
 		    	} else if (x == nb1)
 		    	{
-		    		printf("Le joueur 2 a gagne ! Le nombre mystere etait : %d, il l'a trouve en %d coups ! Bravo !\n", nb1, essai2);
+                    duel_win(2, nb1, essai2);
 					printf("Vous voulez rejouer ? (Y/N) ");
 					scanf(" %c", &reponse_continu);
 		            if (reponse_continu == 'y' || reponse_continu == 'Y')
 		            {
-		                /* On réinvite le joueur 1 à définir un nombre mystère et un nombre de coups */
-						printf("Joueur 1, choisissez un nombre mystere : ");
-						scanf("%d", &nb1);
-						printf("Joueur 2, choisissez un nombre mystere : ");
-						scanf("%d", &nb2);
-						printf("\n\n\n\n\nTres bien ! Je vais tirer au sort celui qui va commencer !\n");
-						printf("...\n");
-						printf("...\n");
-						start = (rand() % (2 - 1 + 1)) + 1; /* Génération du nombre aléatoire entre 1 et 2, ce nombre déterminera celui qui va commencer */
-						printf("C'est bon ! Celui qui vas commencer sera... ... ");
-						if (start == 1)
-						{
-							printf("le Joueur 1 !\n");
-						} else if (start == 2)
-						{
-							printf("le Joueur 2 !\n");
-						}
+						/* On relance un duel */
+						duel_start(&nb1, &nb2, &start);
 		                essai1 = essai2 = 0; /* Réinitialisation de la variable du nombre d'essais */
 		                continuer = 1;
 		            } else if (reponse_continu == 'n' || reponse_continu == 'N'){
@@ -426,49 +370,103 @@ void duel(void)
 		    	}
 	    	} else if (i % 2 == 0) /* Si i est pair, c'est le tour du joueur 1 */
 	    	{
-	    		printf("Joueur 1, quel est le nombre ? ");
-				scanf("%d", &x);
-		    	if (x > nb2)
-		    	{
-		    		printf("C'est moins !\n");
-		    		essai1++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
-		    	} else if (x < nb2)
-		    	{
-		    		printf("C'est plus !\n");
-		    		essai1++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
-		    	} else if (x == nb2)
-		    	{
-		    		printf("Le joueur 1 a gagne ! Le nombre mystere etait : %d, il l'a trouve en %d coups ! Bravo !\n", nb2, essai1);
-					printf("Vous voulez rejouer ? (Y/N) ");
-					scanf(" %c", &reponse_continu);
-		            if (reponse_continu == 'y' || reponse_continu == 'Y')
-		            {
-		                /* On réinvite le joueur 1 à définir un nombre mystère et un nombre de coups */
-						printf("Joueur 1, choisissez un nombre mystere : ");
-						scanf("%d", &nb1);
-						printf("Joueur 2, choisissez un nombre mystere : ");
-						scanf("%d", &nb2);
-						printf("\n\n\n\n\nTres bien ! Je vais tirer au sort celui qui va commencer !\n");
-						printf("...\n");
-						printf("...\n");
-						start = (rand() % (2 - 1 + 1)) + 1; /* Génération du nombre aléatoire entre 1 et 2, ce nombre déterminera celui qui va commencer */
-						printf("C'est bon ! Celui qui vas commencer sera... ... ");
-						if (start == 1)
-						{
-							printf("le Joueur 1 !\n");
-						} else if (start == 2)
-						{
-							printf("le Joueur 2 !\n");
-						}
-		                essai1 = essai2 = 0; /* Réinitialisation de la variable du nombre d'essais */
-		                continuer = 1;
-		            } else if (reponse_continu == 'n' || reponse_continu == 'N'){
-		                continuer = 0;
-		            }
-		    	}
+	    		void duel_control(1, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer, &duel_start, &duel_win);
 	    	}
 	    }
 
     }
 	printf("C'etait cool cette parti ! N'hesitez pas a revenir quand vous voulez !\n");
+}
+/*
+    Fonction de lancement de partie
+    Affiche toutes les formules pour demander les nombres mystères, etc...
+    Tire au sort le joueur qui commence.
+*/
+void duel_start(int * nb1, int * nb2, int * start)
+{
+	/* On réinvite le joueur 1 à définir un nombre mystère et un nombre de coups */
+	printf("Joueur 1, choisissez un nombre mystere : ");
+	scanf("%d", &*nb1); /* On place la réponse dans la variable nb1 */
+	printf("Joueur 2, choisissez un nombre mystere : ");
+	scanf("%d", &*nb2); /* On place la réponse dans la variable nb2 */
+	printf("\n\n\n\n\nTres bien ! Je vais tirer au sort celui qui va commencer !\n");
+	printf("...\n");
+	printf("...\n");
+	*start = (rand() % (2 - 1 + 1)) + 1; /* Génération du nombre aléatoire entre 1 et 2, ce nombre déterminera celui qui va commencer */
+	printf("C'est bon ! Celui qui vas commencer sera... ... ");
+	if (*start == 1)
+	{
+		printf("le Joueur 1 !\n");
+	} else if (*start == 2)
+	{
+		printf("le Joueur 2 !\n");
+	}
+}
+/*
+    Fonction lorsque le joueur gagne le duel
+    Arguments :
+        winner : le numéro du joueur gagnant
+        mystere : le nombre mystere
+        essai : nombre d'essais avant de trouver le nombre mystère
+*/
+void duel_win(int winner, int mystere, int essai)
+{
+    int i; /* Ce qui va nous permettre de nous situer dans notre tableau */
+    char * etonnements[4] = { /* Tableau de pointeur de type char, contenant les différentes exclamations */
+        "Magistral !",
+        "Superbe !",
+        "Pas mal !",
+        "Mouais..."
+    };
+    /*
+        On change la formule d'étonnement en fonction du nombre d'essais réalisés pour trouver
+        le nombre mystère
+    */
+    if (essai <= 5)
+    {
+        i = 0;
+    } else if (essai <= 10)
+    {
+        i = 1;
+    } else if (essai <= 15)
+    {
+        i = 2;
+    } else
+    {
+        i = 3;
+    }
+    /* On affiche aux joueurs le gagnant avec des petites "statistiques" */
+    printf("%s C'est le joueur %d qui a gagne ! Il a trouve le nombre mystere en %d coups !\n", etonnements[i], winner, essai);
+}
+/*
+	Fonction de control si le nombre que le joueur entre est le bon
+*/
+void duel_control(int joueur, int * x, int * nb1, int * nb2, int * essai1, int * essai2, int * start, int * continuer, void (* duel_start)(int, int, int), void (* duel_win)(int, int, int))
+{
+	char reponse_continu; /* Réponse des joueurs pour continuer ou non */
+	printf("Joueur %d, quel est le nombre ? ", joueur);
+	scanf("%d", &*x);
+	if (*x > *nb2)
+	{
+		printf("C'est moins !\n");
+		*essai1++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
+	} else if (*x < *nb2)
+	{
+		printf("C'est plus !\n");
+		*essai1++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
+	} else if (*x == *nb2)
+	{
+		(* duel_win)(joueur, *nb2, *essai1);
+		printf("Vous voulez rejouer ? (Y/N) ");
+		scanf(" %c", &reponse_continu);
+		if (reponse_continu == 'y' || reponse_continu == 'Y')
+		{
+			/* On relance un duel */
+			(* duel_start)(*nb1, *nb2, *start);
+			*essai1 = *essai2 = 0; /* Réinitialisation de la variable du nombre d'essais */
+			*continuer = 1;
+		} else if (reponse_continu == 'n' || reponse_continu == 'N'){
+			*continuer = 0;
+		}
+	}
 }
