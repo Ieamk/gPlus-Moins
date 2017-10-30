@@ -1,4 +1,5 @@
 # gPlus-Moins
+##### **BETA VERSION**
 **Ce programme a été réalisé dans le cadre d'[un TP sur le site OpenClassrooms](https://openclassrooms.com/courses/apprenez-a-programmer-en-c/tp-plus-ou-moins-votre-premier-jeu)**
 
 ## Informations
