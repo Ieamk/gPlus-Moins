@@ -1,3 +1,5 @@
+![gPlus-Moins](https://image.noelshack.com/fichiers/2017/44/2/1509451801-gplus-or-minus.png)
+
 # gPlus-Moins
 **Ce programme a été réalisé dans le cadre d'[un TP sur le site OpenClassrooms](https://openclassrooms.com/courses/apprenez-a-programmer-en-c/tp-plus-ou-moins-votre-premier-jeu)**
 
