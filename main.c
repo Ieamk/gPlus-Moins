@@ -18,8 +18,8 @@ void solo(void); /* Fonction du jeu en solo */
 void meister(void); /* Fonction du jeu en Meister Mode */
 /*      MODE DUEL    */
 void duel(void); /* Fonction du jeu en mode Duel ! */
-void duel_control(int, int *, int *, int *, int *, int *, int *, int *); /* Fonction de controle du mode DUEL */
-void duel_start(int *, int *, int *); /* Fonction de lancement du duel */
+void duel_control(int, int *, int *, int *, int *, int *, int *, int *, int *); /* Fonction de controle du mode DUEL */
+void duel_start(int *, int *, int *, int *, int *, int *, int *); /* Fonction de lancement du duel */
 void duel_win(int, int, int); /* Fonction lorsqu'un joueur gagne le duel */
 /*   FIN MODE DUEL   */
 
@@ -255,21 +255,21 @@ void meister(void)
 /* Fonction du jeu en mode Duel ! */
 void duel(void)
 {
-	/*
-		Ce mode de jeu comporte lui aussi deux joueurs. Au début de la partie, chacun choisi son nombre mystère.
-		Lorsque la partie commence, l'ordinateur tire au sort celui qui commence. Le joueur qui commence fait une première tentative pour trouver le nombre
-		mystère de l'autre joueur, s'il échoue, c'est à l'autre joueur d'essayer de deviner son nombre mystère, etc...
-		Lorsqu'un joueur trouve le nombre mystère de l'autre joueur, la partie s'arrête et il a gagné.
+    /*
+        Ce mode de jeu comporte lui aussi deux joueurs. Au début de la partie, chacun choisi son nombre mystère.
+        Lorsque la partie commence, l'ordinateur tire au sort celui qui commence. Le joueur qui commence fait une première tentative pour trouver le nombre
+        mystère de l'autre joueur, s'il échoue, c'est à l'autre joueur d'essayer de deviner son nombre mystère, etc...
+        Lorsqu'un joueur trouve le nombre mystère de l'autre joueur, la partie s'arrête et il a gagné.
 	*/
     int nb1; /* Nombre mystère du joueur 1 */
     int nb2; /* Nombre mystère du joueur 2 */
-   	int start; /* "Id" du joueur qui va commencer à jouer */
-   	int x; /* Nombre que les joueurs vont entrer */
+    int start; /* "Id" du joueur qui va commencer à jouer */
+    int x; /* Nombre que les joueurs vont entrer */
     int essai1 = 0; /* Nombre d'essais que le joueur n°1 a fait avant de trouver le nombre mystère */
     int essai2 = 0; /* Nombre d'essais que je joueur n°2 a fait avant de trouver le nombre mystère */
     int i = 0; /* Compteur */
+    int init = 1; /* Valeur booléenne qui nous permet de savoir quand il faut initialiser le jeu ou non */
     int continuer = 1; /* Valeur booléenne qui permet de controler la boucle du jeu */
-    char reponse_continu; /* Réponse des joueurs pour continuer ou non */
     /* Un peu d'art, pour plus de fun */
     printf(" _______   __    __   _______  __          __  \n");
     printf("|       \\ |  |  |  | |   ____||  |        |  | \n");
@@ -279,42 +279,46 @@ void duel(void)
     printf("|_______/  \\______/  |_______||_______|   (__) \n\n\n\n");
 	/* Fin de l'art incroyable ! */
 	printf("Youhouuuuuu ! C'est l'heure du du-du-du-du-du-duel !\n");
-	/* On lance un duel avec la fonction duel_start */
-	duel_start(&nb1, &nb2, &start);
+    srand(time(NULL)); /* Initialisation du générateur de nombres aléatoires */
     /* Lancement de la boucle infinie, jusqu'à que le joueur n°2 trouve le nombre mystère */
     while(continuer == 1)
     {
-    	i++; /* On incrémente i de 1 à chaque tour de la boucle */
-    	if (start == 1) /* Dans le cas pù c'est le joueur 1 qui doit commencer */
-    	{
-	    	if (i % 2 == 1) /* Si i est impair, alors c'est le tour du joueur 1 */
-	    	{
-                duel_control(1, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer);
-	    	} else if (i % 2 == 0) /* Si i est pair, c'est au tour du joueur 2 */
-	    	{
-                duel_control(2, &x, &nb2, &nb1, &essai2, &essai1, &start, &continuer);
-	    	}
-	    } else if (start == 2) /* Sinon, si c'est le joueur 2 qui doit commencer */
-    	{
-	    	if (i % 2 == 1) /* Si i est impair, c'est le tour du joueur 2 */
-	    	{
-                duel_control(2, &x, &nb2, &nb1, &essai2, &essai1, &start, &continuer);
-	    	} else if (i % 2 == 0) /* Si i est pair, c'est le tour du joueur 1 */
-	    	{
-	    		duel_control(1, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer);
-	    	}
-	    }
+        if (init == 1)
+        {
+            duel_start(&i, &nb1, &nb2, &start, &essai1, &essai2, &init);
+        }
+        i++; /* On incrémente i de 1 à chaque tour de la boucle */
+        if (start == 1) /* Dans le cas pù c'est le joueur 1 qui doit commencer */
+        {
+            if (i % 2 == 1) /* Si i est impair, alors c'est le tour du joueur 1 */
+            {
+                duel_control(1, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer, &init);
+            } else if (i % 2 == 0) /* Si i est pair, c'est au tour du joueur 2 */
+            {
+                duel_control(2, &x, &nb2, &nb1, &essai2, &essai1, &start, &continuer, &init);
+            }
+        } else if (start == 2) /* Sinon, si c'est le joueur 2 qui doit commencer */
+        {
+            if (i % 2 == 1) /* Si i est impair, c'est le tour du joueur 2 */
+            {
+                duel_control(2, &x, &nb2, &nb1, &essai2, &essai1, &start, &continuer, &init);
+            } else if (i % 2 == 0) /* Si i est pair, c'est le tour du joueur 1 */
+            {
+                duel_control(1, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer, &init);
+            }
+        }
 
     }
-	printf("C'etait cool cette parti ! N'hesitez pas a revenir quand vous voulez !\n");
+    printf("C'etait cool cette parti ! N'hesitez pas a revenir quand vous voulez !\n");
 }
 /*
     Fonction de lancement de partie
     Affiche toutes les formules pour demander les nombres mystères, etc...
     Tire au sort le joueur qui commence.
 */
-void duel_start(int * nb1, int * nb2, int * start)
+void duel_start(int * i, int * nb1, int * nb2, int * start, int * essai1, int * essai2, int * init)
 {
+    *essai1 = *essai2 = *i = 0; /* Réinitialisation de la variable du nombre d'essais et de I ( le compteur ) */
 	/* On réinvite le joueur 1 à définir un nombre mystère et un nombre de coups */
 	printf("Joueur 1, choisissez un nombre mystere : ");
 	scanf("%d", &*nb1); /* On place la réponse dans la variable nb1 */
@@ -332,6 +336,8 @@ void duel_start(int * nb1, int * nb2, int * start)
 	{
 		printf("le Joueur 2 !\n");
 	}
+    /* Tout c'est bien déroulé, le jeu est initialisé, on peut mettre init à 0 */
+    *init = 0;
 }
 /*
     Fonction lorsque le joueur gagne le duel
@@ -372,7 +378,7 @@ void duel_win(int winner, int mystere, int essai)
 /*
 	Fonction de control si le nombre que le joueur entre est le bon
 */
-void duel_control(int joueur, int * x, int * nb1, int * nb2, int * essai1, int * essai2, int * start, int * continuer)
+void duel_control(int joueur, int * x, int * nb1, int * nb2, int * essai1, int * essai2, int * start, int * continuer, int * init)
 {
 	char reponse_continu; /* Réponse des joueurs pour continuer ou non */
 	printf("Joueur %d, quel est le nombre ? ", joueur);
@@ -392,10 +398,7 @@ void duel_control(int joueur, int * x, int * nb1, int * nb2, int * essai1, int *
 		scanf(" %c", &reponse_continu);
 		if (reponse_continu == 'y' || reponse_continu == 'Y')
 		{
-            duel_start(&*nb1, &*nb2, &*start);
-			/* On relance un duel */
-			*essai1 = *essai2 = 0; /* Réinitialisation de la variable du nombre d'essais */
-			*continuer = 1;
+            *init = 1; /* On lance l'initialisation du jeu */
 		} else if (reponse_continu == 'n' || reponse_continu == 'N'){
 			*continuer = 0;
 		}
