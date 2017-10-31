@@ -16,12 +16,14 @@
 void solo(void); /* Fonction du jeu en solo */
 /*      MEISTER MODE    */
 void meister(void); /* Fonction du jeu en Meister Mode */
+void meister_start(int *, int *, int *, int *); /* Fonction de lancement du mode Meister */
+void meister_win(int, int, int); /* Fonction notification gagné / perdu */
+void meister_control(int *, int *, int *, int *, int *, int *); /* Fonction de contrôle du mode Meister */
 /*      MODE DUEL    */
 void duel(void); /* Fonction du jeu en mode Duel ! */
-void duel_control(int, int *, int *, int *, int *, int *, int *, int *, int *); /* Fonction de controle du mode DUEL */
 void duel_start(int *, int *, int *, int *, int *, int *, int *); /* Fonction de lancement du duel */
 void duel_win(int, int, int); /* Fonction lorsqu'un joueur gagne le duel */
-/*   FIN MODE DUEL   */
+void duel_control(int, int *, int *, int *, int *, int *, int *, int *, int *); /* Fonction de controle du mode DUEL */
 
 int main(void)
 {
@@ -53,7 +55,7 @@ int main(void)
         printf("Deux joueurs s'affrontent :\n");
         printf("Ils doivent trouver le nombre mystère de leur adversaire le plus rapidement possible !.\n");
         printf("Bonne partie !\n\n\n\n");
-    	duel();
+        duel();
     } else
     {
         printf("Le mode de jeu solo est tres simple !\n");
@@ -166,7 +168,7 @@ void meister(void)
     int x; /* Nombre que le joueur 2 va entrer */
     int essai = 0; /* Nombre d'essais que le joueur n°2 a fait avant de trouver le nombre mystère */
     int continuer = 1; /* Valeur booléenne qui permet de controler la boucle du jeu */
-    char reponse_continu; /* Réponse des joueurs pour continuer ou non */
+    int init = 1;
     /* Un peu d'art, pour plus de fun */
     printf(" /$$      /$$         /$$           /$$                             /$$      /$$               /$$ \n");
     printf("| $$$    /$$$        |__/          | $$                            | $$$    /$$$              | $$         \n");
@@ -178,78 +180,104 @@ void meister(void)
     printf("|__/     |__/\\_______|__|_______/   \\___/  \\_______|__/            |__/     |__/\\______/ \\_______/\\_______/\n\n\n\n");
     /* Fin de l'art incroyable ! */
     printf("Hey ! J'espere que vous allez bien et que vous etes pret pour vous foutre dessus !\n");
-    printf("Joueur 1, choisissez un nombre mystère : ");
-    scanf("%d", &nb);
-    printf("Joueur 1, choisissez le nombre maximum de coups (minimum 1) : ");
-    scanf("%d", &max);
-    if (max < 1)
-    {
-        max = 1;
-    }
-    printf("Joueur 2 ! C'est votre tour ! Trouvez le nombre mystere !\n");
     /* Lancement de la boucle infinie, jusqu'à que le joueur n°2 trouve le nombre mystère */
     while(continuer == 1)
     {
-        if (essai >= max) /* Si le nombre d'essais dépasse le nombre que le joueur 1 a défini, on arrête la boucle et on notifie le joueur qu'il a perdu ! */
+        if (init == 1) /* On initialise le jeu */
         {
-            printf("Dommage ! Tu as perdu ! Le nombre mystère que le joueur 1 a choisi etait %d\n", nb);
-            /* On invite les joueurs à rejouer :) */
-            printf("Vous voulez rejouer ? (Y/N) ");
-            scanf(" %c", &reponse_continu);
-            if (reponse_continu == 'y' || reponse_continu == 'Y')
-            {
-                /* On réinvite le joueur 1 à définir un nombre mystère et un nombre de coups */
-                printf("Joueur 1, choisissez un nombre mystère : ");
-                scanf("%d", &nb);
-                printf("Joueur 1, choisissez le nombre maximum de coups (minimum 1) : ");
-                scanf("%d", &max);
-                if (max < 1)
-                {
-                    max = 1;
-                }
-                printf("Joueur 2 ! C'est votre tour ! Trouvez le nombre mystere !\n");
-                essai = 0; /* Réinitialisation de la variable du nombre d'essais */
-                continuer = 1;
-            } else if (reponse_continu == 'n' || reponse_continu == 'N'){
-                continuer = 0;
-            }
+            meister_start(&nb, &max, &essai, &init);
         }
-        /* On demande au joueur 2 le nombre mystère */
-        printf("Quel est le nombre ? ");
-        scanf("%d", &x);
-        if (x > nb)
+        meister_control(&nb, &max, &x, &essai, &init, &continuer);
+    }
+    printf("C'etait cool cette parti ! N'hesitez pas a revenir quand vous voulez !\n");
+}
+/*
+    Fonction de lancement de la partie
+    Demande au joueur 1 le nombre mystère ainsi que le nombre maximum de coups
+*/
+void meister_start(int * nb, int * max, int * essai, int * init)
+{
+    *essai = *init = 0;
+    printf("Joueur 1, choisissez un nombre mystere : ");
+    scanf("%d", &*nb);
+    printf("Joueur 1, choisissez le nombre maximum de coups (minimum 1) : ");
+    scanf("%d", &*max);
+    /* Contrôle du minimum de coups */
+    if (*max < 1)
+    {
+        *max = 1;
+    }
+    printf("Joueur 2 ! C'est votre tour ! Trouvez le nombre mystere !\n");
+}
+/*
+    Fonction gagné / perdu
+    Notifie le joueur 2 lorsqu'il a gagné ou perdu
+*/
+void meister_win(int status, int essais, int mystere)
+{
+    /* On contrôle s'il y a eu plus d'un essais, pour éventuellement le mettre au pluriel */
+    int nb_essai = 0;
+    char * pluriel[2] = {
+        "essai",
+        "essais"
+    };
+    if (essais > 1)
+    {
+        nb_essai = 1;
+    }
+    /* Si le joueur a gagné */
+    if (status == 1)
+    {
+        printf("Supercalifragilisticexpialidocious ! C'est le joueur 2 qui l'emporte en %d %s !\n", essais, pluriel[nb_essai]);
+    } else
+    {
+        printf("Le joueur 2 a perdu ! Le nombre mystere etait %d et il fallait le trouver en %d %s !\n", mystere, essais, pluriel[nb_essai]);
+    }
+}
+/*
+    Fonction de contrôle mode Meister
+*/
+void meister_control(int * nb, int * max, int * x, int * essai, int * init, int * continuer)
+{
+    char reponse_continu;
+    if (*essai >= *max) /* Si le nombre d'essais dépasse le nombre que le joueur 1 a défini, on arrête la boucle et on notifie le joueur qu'il a perdu ! */
+    {
+        meister_win(0, *max, *nb); /* Le joueur a perdu */
+        /* On invite les joueurs à rejouer :) */
+        printf("Vous voulez rejouer ? (Y/N) ");
+        scanf(" %c", &reponse_continu);
+        if (reponse_continu == 'y' || reponse_continu == 'Y')
         {
-            printf("C'est moins !\n"); /* On affiche au joueur que le nombre mystère est inférieur à ce qu'il a entré */
-            essai++; /* On ajoute +1 à la variable essai */
-        } else if (x < nb)
-        {
-            printf("C'est plus !\n"); /* On affiche au joueur que le nombre mystère est supérieur à ce qu'il a entré */
-            essai++; /* On ajoute +1 à la variable essai */
-        } else if (x == nb)
-        {
-            printf("Bravo ! Tu as trouve le nombre mystere ! C'etais %d ! Tu l'as trouve en %d essais !\n", nb, essai + 1);
-            printf("Vous voulez rejouer ? (Y/N) ");
-            scanf(" %c", &reponse_continu);
-            if (reponse_continu == 'y' || reponse_continu == 'Y')
-            {
-                /* On réinvite le joueur 1 à définir un nombre mystère et un nombre de coups */
-                printf("Joueur 1, choisissez un nombre mystère : ");
-                scanf("%d", &nb);
-                printf("Joueur 1, choisissez le nombre maximum de coups (minimum 1) : ");
-                scanf("%d", &max);
-                if (max < 1)
-                {
-                    max = 1;
-                }
-                printf("Joueur 2 ! C'est votre tour ! Trouvez le nombre mystere !\n");
-                essai = 0; /* Réinitialisation de la variable du nombre d'essais */
-                continuer = 1;
-            } else if (reponse_continu == 'n' || reponse_continu == 'N'){
-                continuer = 0;
-            }
+            /* On réinitialise le jeu */
+            *init = 1;
+        } else if (reponse_continu == 'n' || reponse_continu == 'N'){
+            continuer = 0;
         }
     }
-	printf("C'etait cool cette parti ! N'hesitez pas a revenir quand vous voulez !\n");
+    /* On demande au joueur 2 le nombre mystère */
+    printf("Quel est le nombre ? ");
+    scanf("%d", &*x);
+    if (*x > *nb)
+     {
+        printf("C'est moins !\n"); /* On affiche au joueur que le nombre mystère est inférieur à ce qu'il a entré */
+        *essai = *essai + 1; /* On ajoute +1 à la variable essai */
+    } else if (*x < *nb)
+    {
+        printf("C'est plus !\n"); /* On affiche au joueur que le nombre mystère est supérieur à ce qu'il a entré */
+        *essai = *essai + 1; /* On ajoute +1 à la variable essai */
+    } else if (*x == *nb)
+    {
+        meister_win(1, *essai, *nb);
+        printf("Vous voulez rejouer ? (Y/N) ");
+        scanf(" %c", &reponse_continu);
+        if (reponse_continu == 'y' || reponse_continu == 'Y')
+        {
+            /* On réinitialise le jeu */
+            *init = 1;
+        } else if (reponse_continu == 'n' || reponse_continu == 'N'){
+            *continuer = 0;
+        }
+    }
 }
 
 /* Fonction du jeu en mode Duel ! */
@@ -260,7 +288,7 @@ void duel(void)
         Lorsque la partie commence, l'ordinateur tire au sort celui qui commence. Le joueur qui commence fait une première tentative pour trouver le nombre
         mystère de l'autre joueur, s'il échoue, c'est à l'autre joueur d'essayer de deviner son nombre mystère, etc...
         Lorsqu'un joueur trouve le nombre mystère de l'autre joueur, la partie s'arrête et il a gagné.
-	*/
+    */
     int nb1; /* Nombre mystère du joueur 1 */
     int nb2; /* Nombre mystère du joueur 2 */
     int start; /* "Id" du joueur qui va commencer à jouer */
@@ -277,8 +305,8 @@ void duel(void)
     printf("|  |  |  ||  |  |  | |   __|  |  |        |  | \n");
     printf("|  '--'  ||  `--'  | |  |____ |  `----.   |__| \n");
     printf("|_______/  \\______/  |_______||_______|   (__) \n\n\n\n");
-	/* Fin de l'art incroyable ! */
-	printf("Youhouuuuuu ! C'est l'heure du du-du-du-du-du-duel !\n");
+    /* Fin de l'art incroyable ! */
+    printf("Youhouuuuuu ! C'est l'heure du du-du-du-du-du-duel !\n");
     srand(time(NULL)); /* Initialisation du générateur de nombres aléatoires */
     /* Lancement de la boucle infinie, jusqu'à que le joueur n°2 trouve le nombre mystère */
     while(continuer == 1)
@@ -319,23 +347,23 @@ void duel(void)
 void duel_start(int * i, int * nb1, int * nb2, int * start, int * essai1, int * essai2, int * init)
 {
     *essai1 = *essai2 = *i = 0; /* Réinitialisation de la variable du nombre d'essais et de I ( le compteur ) */
-	/* On réinvite le joueur 1 à définir un nombre mystère et un nombre de coups */
-	printf("Joueur 1, choisissez un nombre mystere : ");
-	scanf("%d", &*nb1); /* On place la réponse dans la variable nb1 */
-	printf("Joueur 2, choisissez un nombre mystere : ");
-	scanf("%d", &*nb2); /* On place la réponse dans la variable nb2 */
-	printf("\n\n\n\n\nTres bien ! Je vais tirer au sort celui qui va commencer !\n");
-	printf("...\n");
-	printf("...\n");
-	*start = (rand() % (2 - 1 + 1)) + 1; /* Génération du nombre aléatoire entre 1 et 2, ce nombre déterminera celui qui va commencer */
-	printf("C'est bon ! Celui qui vas commencer sera... ... ");
-	if (*start == 1)
-	{
-		printf("le Joueur 1 !\n");
-	} else if (*start == 2)
-	{
-		printf("le Joueur 2 !\n");
-	}
+    /* On réinvite le joueur 1 à définir un nombre mystère et un nombre de coups */
+    printf("Joueur 1, choisissez un nombre mystere : ");
+    scanf("%d", &*nb1); /* On place la réponse dans la variable nb1 */
+    printf("Joueur 2, choisissez un nombre mystere : ");
+    scanf("%d", &*nb2); /* On place la réponse dans la variable nb2 */
+    printf("\n\n\n\n\nTres bien ! Je vais tirer au sort celui qui va commencer !\n");
+    printf("...\n");
+    printf("...\n");
+    *start = (rand() % (2 - 1 + 1)) + 1; /* Génération du nombre aléatoire entre 1 et 2, ce nombre déterminera celui qui va commencer */
+    printf("C'est bon ! Celui qui vas commencer sera... ... ");
+    if (*start == 1)
+    {
+        printf("le Joueur 1 !\n");
+    } else if (*start == 2)
+    {
+        printf("le Joueur 2 !\n");
+    }
     /* Tout c'est bien déroulé, le jeu est initialisé, on peut mettre init à 0 */
     *init = 0;
 }
@@ -376,31 +404,31 @@ void duel_win(int winner, int mystere, int essai)
     printf("%s C'est le joueur %d qui a gagne ! Il a trouve le nombre mystere en %d coups !\n", etonnements[i], winner, essai);
 }
 /*
-	Fonction de control si le nombre que le joueur entre est le bon
+    Fonction de control si le nombre que le joueur entre est le bon
 */
 void duel_control(int joueur, int * x, int * nb1, int * nb2, int * essai1, int * essai2, int * start, int * continuer, int * init)
 {
-	char reponse_continu; /* Réponse des joueurs pour continuer ou non */
-	printf("Joueur %d, quel est le nombre ? ", joueur);
-	scanf("%d", &*x);
-	if (*x > *nb2)
-	{
-		printf("C'est moins !\n");
-		*essai1++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
-	} else if (*x < *nb2)
-	{
-		printf("C'est plus !\n");
-		*essai1++; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
-	} else if (*x == *nb2)
-	{
+    char reponse_continu; /* Réponse des joueurs pour continuer ou non */
+    printf("Joueur %d, quel est le nombre ? ", joueur);
+    scanf("%d", &*x);
+    if (*x > *nb2)
+    {
+        printf("C'est moins !\n");
+        *essai1 = *essai1 + 1; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
+    } else if (*x < *nb2)
+    {
+        printf("C'est plus !\n");
+        *essai1 = *essai1 + 1; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
+    } else if (*x == *nb2)
+    {
         duel_win(joueur, *nb2, *start);
-		printf("Vous voulez rejouer ? (Y/N) ");
-		scanf(" %c", &reponse_continu);
-		if (reponse_continu == 'y' || reponse_continu == 'Y')
-		{
+        printf("Vous voulez rejouer ? (Y/N) ");
+        scanf(" %c", &reponse_continu);
+        if (reponse_continu == 'y' || reponse_continu == 'Y')
+        {
             *init = 1; /* On lance l'initialisation du jeu */
-		} else if (reponse_continu == 'n' || reponse_continu == 'N'){
-			*continuer = 0;
-		}
-	}
+        } else if (reponse_continu == 'n' || reponse_continu == 'N'){
+            *continuer = 0;
+        }
+    }
 }
