@@ -6,12 +6,13 @@
 ******************************************/
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
 #include <time.h>
 #define MIN 1
-
 /*
     Les fonctions
 */
+void text_color(int t,int f);
 /*      MODE SOLO    */
 void solo(void); /* Fonction du jeu en solo */
 void solo_start(int *, int *, int *, int *, int *); /* Fonction d'initialisation du mode Solo */
@@ -25,15 +26,15 @@ void meister_control(int *, int *, int *, int *, int *, int *); /* Fonction de c
 /*      MODE DUEL    */
 void duel(void); /* Fonction du jeu en mode Duel ! */
 void duel_start(int *, int *, int *, int *, int *, int *, int *); /* Fonction de lancement du duel */
-void duel_win(int, int, int); /* Fonction lorsqu'un joueur gagne le duel */
-void duel_control(int, int *, int *, int *, int *, int *, int *, int *, int *); /* Fonction de controle du mode DUEL */
+void duel_win(int, int, int, int, int, int); /* Fonction lorsqu'un joueur gagne le duel */
+void duel_control(int, int, int *, int *, int *, int *, int *, int *, int *, int *); /* Fonction de controle du mode DUEL */
 
 int main(void)
 {
     int mode; /* Mode de jeu que l'utilisateur a choisi */
 
     /*
-    *   Début du programme
+    *   Début du programme 10 et 12
     */
     /* Formules de politesse et choix du mode de jeu par le joueur */
     printf("Bonjour jeune joueur des contrees lointaines !\n");
@@ -69,7 +70,11 @@ int main(void)
     }
     return 0;
 }
-
+void text_color(int t,int f)
+{
+    HANDLE H=GetStdHandle(STD_OUTPUT_HANDLE);
+             SetConsoleTextAttribute(H, (f * 16 + t));
+}
 /* Fonction du jeu en solo */
 void solo(void)
 {
@@ -359,23 +364,28 @@ void duel(void)
         {
             if (i % 2 == 1) /* Si i est impair, alors c'est le tour du joueur 1 */
             {
-                duel_control(1, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer, &init);
+                text_color(10, 0);
+                duel_control(1, 2, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer, &init);
             } else if (i % 2 == 0) /* Si i est pair, c'est au tour du joueur 2 */
             {
-                duel_control(2, &x, &nb2, &nb1, &essai2, &essai1, &start, &continuer, &init);
+                text_color(12, 0);
+                duel_control(2, 1, &x, &nb2, &nb1, &essai2, &essai1, &start, &continuer, &init);
             }
         } else if (start == 2) /* Sinon, si c'est le joueur 2 qui doit commencer */
         {
             if (i % 2 == 1) /* Si i est impair, c'est le tour du joueur 2 */
             {
-                duel_control(2, &x, &nb2, &nb1, &essai2, &essai1, &start, &continuer, &init);
+                text_color(12, 0);
+                duel_control(2, 1, &x, &nb2, &nb1, &essai2, &essai1, &start, &continuer, &init);
             } else if (i % 2 == 0) /* Si i est pair, c'est le tour du joueur 1 */
             {
-                duel_control(1, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer, &init);
+                text_color(10, 0);
+                duel_control(1, 2, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer, &init);
             }
         }
 
     }
+    text_color(7, 0);
     printf("C'etait cool cette parti ! N'hesitez pas a revenir quand vous voulez !\n");
 }
 /*
@@ -385,6 +395,7 @@ void duel(void)
 */
 void duel_start(int * i, int * nb1, int * nb2, int * start, int * essai1, int * essai2, int * init)
 {
+    text_color(7, 0); /* Réinsitalisation de la couleur de l'écriture dans la console. */
     *essai1 = *essai2 = *i = 0; /* Réinitialisation de la variable du nombre d'essais et de I ( le compteur ) */
     /* On réinvite le joueur 1 à définir un nombre mystère et un nombre de coups */
     printf("Joueur 1, choisissez un nombre mystere : ");
@@ -398,10 +409,14 @@ void duel_start(int * i, int * nb1, int * nb2, int * start, int * essai1, int * 
     printf("C'est bon ! Celui qui vas commencer sera... ... ");
     if (*start == 1)
     {
+        text_color(10, 0);
         printf("le Joueur 1 !\n");
+        text_color(7, 0); /* Réinitialisation de l'écriture dans la console */
     } else if (*start == 2)
     {
+        text_color(12, 0);
         printf("le Joueur 2 !\n");
+        text_color(7, 0); /* Réinitialisation de l'écriture dans la console */
     }
     /* Tout c'est bien déroulé, le jeu est initialisé, on peut mettre init à 0 */
     *init = 0;
@@ -413,7 +428,7 @@ void duel_start(int * i, int * nb1, int * nb2, int * start, int * essai1, int * 
         mystere : le nombre mystere
         essai : nombre d'essais avant de trouver le nombre mystère
 */
-void duel_win(int winner, int mystere, int essai)
+void duel_win(int winner, int mystere, int essai, int looser, int essai2, int nb2)
 {
     int i; /* Ce qui va nous permettre de nous situer dans notre tableau */
     char * etonnements[4] = { /* Tableau de pointeur de type char, contenant les différentes exclamations */
@@ -422,6 +437,7 @@ void duel_win(int winner, int mystere, int essai)
         "Pas mal !",
         "Mouais..."
     };
+    text_color(7, 0); /* Réinitialisation de l'écriture dans la console */
     /*
         On change la formule d'étonnement en fonction du nombre d'essais réalisés pour trouver
         le nombre mystère
@@ -439,13 +455,16 @@ void duel_win(int winner, int mystere, int essai)
     {
         i = 3;
     }
+    /* On leurs dit quels étaient les chiffres */
+    printf("Le nombre mystere du joueur %d etait : %d\n", winner, nb2);
+    printf("Le nombre mystere du joueur %d etait : %d\n", looser, mystere);
     /* On affiche aux joueurs le gagnant avec des petites "statistiques" */
     printf("%s C'est le joueur %d qui a gagne ! Il a trouve le nombre mystere en %d coups !\n", etonnements[i], winner, essai);
 }
 /*
     Fonction de control si le nombre que le joueur entre est le bon
 */
-void duel_control(int joueur, int * x, int * nb1, int * nb2, int * essai1, int * essai2, int * start, int * continuer, int * init)
+void duel_control(int joueur, int adversaire, int * x, int * nb1, int * nb2, int * essai1, int * essai2, int * start, int * continuer, int * init)
 {
     char reponse_continu; /* Réponse des joueurs pour continuer ou non */
     printf("Joueur %d, quel est le nombre ? ", joueur);
@@ -460,7 +479,7 @@ void duel_control(int joueur, int * x, int * nb1, int * nb2, int * essai1, int *
         *essai1 = *essai1 + 1; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
     } else if (*x == *nb2)
     {
-        duel_win(joueur, *nb2, *start);
+        duel_win(joueur, *nb2, *essai1+ 1, adversaire, *essai2, *nb1);
         printf("Vous voulez rejouer ? (Y/N) ");
         scanf(" %c", &reponse_continu);
         if (reponse_continu == 'y' || reponse_continu == 'Y')
