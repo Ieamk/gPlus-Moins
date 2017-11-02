@@ -14,6 +14,9 @@
 */
 /*      MODE SOLO    */
 void solo(void); /* Fonction du jeu en solo */
+void solo_start(int *, int *, int *, int *, int *); /* Fonction d'initialisation du mode Solo */
+void solo_win(int *, int *);    /* Notification au joueur s'il a gagné */
+void solo_control(int *, int *, int *, int *, int *, int *); /* Fonction de controle du mode solo */
 /*      MEISTER MODE    */
 void meister(void); /* Fonction du jeu en Meister Mode */
 void meister_start(int *, int *, int *, int *); /* Fonction de lancement du mode Meister */
@@ -71,12 +74,11 @@ int main(void)
 void solo(void)
 {
     int nb; /* Nombre aléatoire, généré par la machine (nombre mystère)*/
-    int x; /* Nombre que l'utilisateur va entrer */
     int difficulte; /* Difficulté choisie par l'utilisateur ( 1 = Facile ; 2 = Moyen ; 3 = Difficile) */
     int max; /* Nombre maximum */
     int essai = 0; /* Nombre d'essais que l'utilisateur a fait avant de trouver le nombre mystère */
     int continuer = 1; /* L'utilisateur veut-il continuer ? */
-    char reponse_continu; /* Réponse de l'utilisateur lorsqu'on va lui demander s'il veut continuer ou non */
+    int init = 1;
     /* Un peu d'art, pour plus de fun */
     printf("  ,ad8888ba,    88888888ba   88888888ba,    88  \n");
     printf(" d8\"'    `\"8b   88      \"8b  88      `\"8b   88  \n");
@@ -89,72 +91,109 @@ void solo(void)
     /* Fin de l'art incroyable ! */
     /* Pacotilles et choix du niveau de difficulté */
     printf("Super ! Je vois que tu souhaites te mesurer au boss des boss ! On m'appelle \"The Terminator\" dans le milleu :)\n");
-    printf("Choisissez un niveau de difficulte :\n");
-    printf("1 = Facile\n2 = Moyen\n3 = Difficile\n");
-    printf("Niveau de difficulte : ");
-    scanf("%d", &difficulte);
-    /* Switch pour définir la valeur de max (= valeur maximale du nombre mystère) */
-    switch (difficulte)
-    {
-        case 1 : max = 100;
-                 break;
-        case 2 : max = 1000;
-                 break;
-        case 3 : max = 10000;
-                 break;
-        default : max = 100;
-                  break;
-    }
-    srand(time(NULL)); /* Initialisation du générateur de nombres aléatoires */
-    nb = (rand() % (max - MIN + 1)) + MIN; /* Génération du nombre aléatoire entre MAX - MIN */
     printf("J'espere que tu es pret a jouer car c'est parti !\n"); /* On motive un peut le joueur :p */
+    srand(time(NULL)); /* Initialisation du générateur de nombres aléatoires */
     /* Lancement de la boucle infinie, jusqu'à que le joueur trouve le nombre mystère */
     while(continuer == 1)
     {
-        printf("Quel est le nombre ? ");
-        scanf("%d", &x);
-        if (x > nb)
+        if (init ==1)
         {
-            printf("C'est moins !\n"); /* On affiche au joueur que le nombre mystère est inférieur à ce qu'il a entré */
-            essai++; /* On ajoute +1 à la variable essai */
-        } else if (x < nb)
-        {
-            printf("C'est plus !\n"); /* On affiche au joueur que le nombre mystère est supérieur à ce qu'il a entré */
-            essai++; /* On ajoute +1 à la variable essai */
-        } else if (x == nb)
-        {
-            printf("Bravo ! Tu as trouve le nombre mystere ! C'etais %d ! Tu l'as trouve en %d essais !\n", nb, essai + 1);
-            printf("Veux-tu rejouer ? (Y/N) ");
-            scanf(" %c", &reponse_continu);
-            if (reponse_continu == 'y' || reponse_continu == 'Y')
-            {
-                printf("1 = Facile\n2 = Moyen\n3 = Difficile\n");
-                printf("Niveau de difficulte : ");
-                scanf("%d", &difficulte);
-                /* Switch pour définir la valeur de max (= valeur maximale du nombre mystère) */
-                switch (difficulte)
-                {
-                    case 1 : max = 100;
-                             break;
-                    case 2 : max = 1000;
-                             break;
-                    case 3 : max = 10000;
-                             break;
-                    default : max = 100;
-                              break;
-                }
-                nb = (rand() % (max - MIN + 1)) + MIN; /* Génération d'un nouveau nombre aléatoire, pour la nouvelle partie */
-                essai = 0; /* Réinitialisation de la variable du nombre d'essais */
-                continuer = 1;
-            } else if (reponse_continu == 'n' || reponse_continu == 'N'){
-                continuer = 0;
-            }
+            /* On initialise la partie ! */
+            solo_start(&init, &difficulte, &max, &nb, &essai);
         }
+        solo_control(&nb, &difficulte, &max, &essai, &continuer, &init);
     }
     printf("Ce fut un plaisir de jouer avec toi (meme si tu es bien moins fort que moi) !\n");
     printf("A une prochaine fois !\n");
 }
-
+/*
+    Fonction de lancement de la partie
+    Demande le niveau de difficulté et lance la partie
+*/
+void solo_start(int * init, int * difficulte, int * max, int * nb, int * essai)
+{
+    /* Réinitialisation des essais du joueur et mise à 0 de l'initialisation */
+    *essai = *init = 0;
+    printf("Choisissez un niveau de difficulte :\n");
+    printf("1 = Facile\n2 = Moyen\n3 = Difficile\n");
+    printf("Niveau de difficulte : ");
+    scanf("%d", &*difficulte);
+    /* Switch pour définir la valeur de max (= valeur maximale du nombre mystère) */
+    switch (*difficulte)
+    {
+        case 1 : *max = 100;
+                 break;
+        case 2 : *max = 1000;
+                 break;
+        case 3 : *max = 10000;
+                 break;
+        default : *max = 100;
+                  break;
+    }
+    *nb = (rand() % (*max - MIN + 1)) + MIN; /* Génération du nombre aléatoire entre MAX - MIN */
+}
+/*
+    Fonction lorsque le joueur gagne
+    Mode solo
+*/
+void solo_win(int * nb, int * essai)
+{
+    int i; /* Chiffre qui va nous permettre de définir l'exclamation */
+    char * exclamation[4] = {
+        "Bastante !",
+        "Inimaginable !",
+        "Passable.",
+        "Bof, tu peux mieux faire..."
+    };
+    /*
+        On change la formule d'exclamation en fonction du nombre d'essais effectués pour trouver
+        le nombre mystère
+    */
+    if (*essai <= 5)
+    {
+        i = 0;
+    } else if (*essai <= 10)
+    {
+        i = 1;
+    } else if (*essai <= 15)
+    {
+        i = 2;
+    } else
+    {
+        i = 3;
+    }
+    printf("%s Tu as trouve le nombre mystere ! C'etais %d ! Tu l'as trouve en %d essais !\n", exclamation[i], *nb, *essai);
+}
+/*
+    Fonction de contrôle du mode solo
+*/
+void solo_control(int * nb, int * difficulte, int * max, int * essai, int * continuer, int * init)
+{
+    int x;
+    char reponse_continu;
+    printf("Quel est le nombre ? ");
+    scanf("%d", &x);
+    if (x > *nb)
+    {
+        printf("C'est moins !\n"); /* On affiche au joueur que le nombre mystère est inférieur à ce qu'il a entré */
+        *essai = *essai + 1; /* On ajoute +1 à la variable essai */
+    } else if (x < *nb)
+    {
+        printf("C'est plus !\n"); /* On affiche au joueur que le nombre mystère est supérieur à ce qu'il a entré */
+        *essai = *essai + 1; /* On ajoute +1 à la variable essai */
+    } else if (x == *nb)
+    {
+        solo_win(&*nb, &*essai);
+        printf("Veux-tu rejouer ? (Y/N) ");
+        scanf(" %c", &reponse_continu);
+        if (reponse_continu == 'y' || reponse_continu == 'Y')
+        {
+            solo_start(&*init, &*difficulte, &*max, &*nb, &*essai);
+        } else if (reponse_continu == 'n' || reponse_continu == 'N'){
+            *continuer = 0;
+        }
+    }
+}
 /* Fontion du jeu en Meister Mode */
 void meister(void)
 {
