@@ -15,9 +15,9 @@
 void text_color(int t,int f);
 /*      MODE SOLO    */
 void solo(void); /* Fonction du jeu en solo */
-void solo_start(int *, int *, int *, int *, int *); /* Fonction d'initialisation du mode Solo */
+void solo_start(int *, int *, int *); /* Fonction d'initialisation du mode Solo */
 void solo_win(int *, int *);    /* Notification au joueur s'il a gagné */
-void solo_control(int *, int *, int *, int *, int *, int *); /* Fonction de controle du mode solo */
+void solo_control(int *, int *, int *, int *); /* Fonction de controle du mode solo */
 /*      MEISTER MODE    */
 void meister(void); /* Fonction du jeu en Meister Mode */
 void meister_start(int *, int *, int *, int *); /* Fonction de lancement du mode Meister */
@@ -34,42 +34,35 @@ int main(void)
     int mode; /* Mode de jeu que l'utilisateur a choisi */
 
     /*
-    *   Début du programme 10 et 12
+    *   Début du programme
     */
     /* Formules de politesse et choix du mode de jeu par le joueur */
-    printf("Bonjour jeune joueur des contrees lointaines !\n");
-    printf("Si tu es ici, c'est que tu veux te mesurer a moi !\n");
-    printf("Modes de jeu disponibles :\n");
-    printf("1. Solo\n");
-    printf("2. Meister Mode\n");
-    printf("3. Duel\n");
+    puts("Bonjour jeune joueur des contrees lointaines !\n");
+    puts("Si tu es ici, c'est que tu veux te mesurer a moi !\nModes de jeu disponibles :\n1. Solo\n2. Meister Mode\n3. Duel");
     printf("Mode de jeu souhaite (1, 2 ou 3) : ");
     scanf("%d", &mode); /* On met la réponse dans la variable mode */
     if (mode == 2)
     {
-        printf("Je comprends... Tu as trop peur de me defier, tu joues donc contre moins fort... C'est tout a ton honneur :/\n\n");
-        printf("Le mode de jeu \"Meister Mode\" est super !\n");
-        printf("Il y a deux joueur : le maitre de jeu et le joueur\n");
-        printf("Le but du maître de jeu est de choisir un nombre mytere que le joueur ne trouvera pas.\nLe maitre de jeu defini aussi le nombre de coups maximum que le joueur peut effectuer avant de trouver le nombre.\n");
-        printf("Le but du joueur est tout simplement de trouver le nombre mystere en faisant le moins de coups possible !\n\n\n\n");
+        puts("Je comprends... Tu as trop peur de me defier, tu joues donc contre moins fort... C'est tout a ton honneur :/\n\nLe mode de jeu \"Meister Mode\" est super !\nIl y a deux joueur : le maitre de jeu et le joueur\nLe but du maître de jeu est de choisir un nombre mytere que le joueur ne trouvera pas.");
+        puts("Le maitre de jeu defini aussi le nombre de coups maximum que le joueur peut effectuer avant de trouver le nombre.\nLe but du joueur est tout simplement de trouver le nombre mystere en faisant le moins de coups possible !\n\n\n\n");
         meister();
     } else if (mode == 3)
     {
-        printf("Le mode de jeu \"Duel\" est cooooo-oool !!\n");
-        printf("Deux joueurs s'affrontent :\n");
-        printf("Ils doivent trouver le nombre mystère de leur adversaire le plus rapidement possible !.\n");
-        printf("Bonne partie !\n\n\n\n");
+        puts("Le mode de jeu \"Duel\" est cooooo-oool !!\nDeux joueurs s'affrontent :\nIls doivent trouver le nombre mystère de leur adversaire le plus rapidement possible !.\nBonne partie !\n\n\n\n");
         duel();
     } else
     {
-        printf("Le mode de jeu solo est tres simple !\n");
-        printf("L'ordinateur choisi un nombre aleatoirement et toi, tu dois le trouver !\n");
-        printf("Il existe plusieurs niveau de difficulté : dans le niveau facile, l'ordinateur choisi un nombre entre 1 et 100\n                                            dans le niveau moyen, l'ordinateur choisi un nombre entre 1 et 1,000\n                                            dans le niveau difficile, l'ordinateur choisi un nombre entre 1 et 10,000\n\n\n");
-        printf("Le but du jeu est donc de trouver ce nombre avec le moins d'essais possible !\n\n\n\n");
+        puts("Le mode de jeu solo est tres simple !");
+        puts("L'ordinateur choisi un nombre aleatoirement et toi, tu dois le trouver !");
+        puts("Il existe plusieurs niveau de difficulté : dans le niveau facile, l'ordinateur choisi un nombre entre 1 et 100\n                                            dans le niveau moyen, l'ordinateur choisi un nombre entre 1 et 1,000\n                                            dans le niveau difficile, l'ordinateur choisi un nombre entre 1 et 10,000\n");
+        puts("Le but du jeu est donc de trouver ce nombre avec le moins d'essais possible !\n");
         solo();
     }
     return 0;
 }
+/*
+    Fonction de changement de la couleur du texte
+*/
 void text_color(int t,int f)
 {
     HANDLE H=GetStdHandle(STD_OUTPUT_HANDLE);
@@ -79,63 +72,63 @@ void text_color(int t,int f)
 void solo(void)
 {
     int nb; /* Nombre aléatoire, généré par la machine (nombre mystère)*/
-    int difficulte; /* Difficulté choisie par l'utilisateur ( 1 = Facile ; 2 = Moyen ; 3 = Difficile) */
-    int max; /* Nombre maximum */
     int essai = 0; /* Nombre d'essais que l'utilisateur a fait avant de trouver le nombre mystère */
     int continuer = 1; /* L'utilisateur veut-il continuer ? */
     int init = 1;
     /* Un peu d'art, pour plus de fun */
-    printf("  ,ad8888ba,    88888888ba   88888888ba,    88  \n");
-    printf(" d8\"'    `\"8b   88      \"8b  88      `\"8b   88  \n");
-    printf("d8'        `8b  88      ,8P  88        `8b  88  \n");
-    printf("88          88  88aaaaaa8P'  88         88  88  \n");
-    printf("88          88  88\"\"\"\"88'    88         88  88  \n");
-    printf("Y8,        ,8P  88    `8b    88         8P  88  \n");
-    printf(" Y8a.    .a8P   88     `8b   88      .a8P   88  \n");
-    printf("  `\"Y8888Y\"'    88      `8b  88888888Y\"'    88  \n\n\n\n");
+    puts("  ,ad8888ba,    88888888ba   88888888ba,    88  ");
+    puts(" d8\"'    `\"8b   88      \"8b  88      `\"8b   88  ");
+    puts("d8'        `8b  88      ,8P  88        `8b  88  ");
+    puts("88          88  88aaaaaa8P'  88         88  88  ");
+    puts("88          88  88\"\"\"\"88'    88         88  88  ");
+    puts("Y8,        ,8P  88    `8b    88         8P  88  ");
+    puts(" Y8a.    .a8P   88     `8b   88      .a8P   88  ");
+    puts("  `\"Y8888Y\"'    88      `8b  88888888Y\"'    88  \n\n\n");
     /* Fin de l'art incroyable ! */
     /* Pacotilles et choix du niveau de difficulté */
-    printf("Super ! Je vois que tu souhaites te mesurer au boss des boss ! On m'appelle \"The Terminator\" dans le milleu :)\n");
-    printf("J'espere que tu es pret a jouer car c'est parti !\n"); /* On motive un peut le joueur :p */
+    puts("Super ! Je vois que tu souhaites te mesurer au boss des boss ! On m'appelle \"The Terminator\" dans le milleu :)");
+    puts("J'espere que tu es pret a jouer car c'est parti !\n"); /* On motive un peut le joueur :p */
     srand(time(NULL)); /* Initialisation du générateur de nombres aléatoires */
     /* Lancement de la boucle infinie, jusqu'à que le joueur trouve le nombre mystère */
-    while(continuer == 1)
+    while(continuer)
     {
-        if (init ==1)
+        if (init)
         {
             /* On initialise la partie ! */
-            solo_start(&init, &difficulte, &max, &nb, &essai);
+            solo_start(&init, &nb, &essai);
         }
-        solo_control(&nb, &difficulte, &max, &essai, &continuer, &init);
+        solo_control(&nb, &essai, &continuer, &init);
     }
-    printf("Ce fut un plaisir de jouer avec toi (meme si tu es bien moins fort que moi) !\n");
-    printf("A une prochaine fois !\n");
+    puts("Ce fut un plaisir de jouer avec toi (meme si tu es bien moins fort que moi) !");
+    puts("A une prochaine fois !\n");
 }
 /*
     Fonction de lancement de la partie
     Demande le niveau de difficulté et lance la partie
 */
-void solo_start(int * init, int * difficulte, int * max, int * nb, int * essai)
+void solo_start(int * init, int * nb, int * essai)
 {
+    int max;
+    int difficulte;
     /* Réinitialisation des essais du joueur et mise à 0 de l'initialisation */
     *essai = *init = 0;
-    printf("Choisissez un niveau de difficulte :\n");
-    printf("1 = Facile\n2 = Moyen\n3 = Difficile\n");
+    puts("Choisissez un niveau de difficulte :\n");
+    puts("1 = Facile\n2 = Moyen\n3 = Difficile");
     printf("Niveau de difficulte : ");
-    scanf("%d", &*difficulte);
+    scanf("%d", &difficulte);
     /* Switch pour définir la valeur de max (= valeur maximale du nombre mystère) */
-    switch (*difficulte)
+    switch (difficulte)
     {
-        case 1 : *max = 100;
+        case 1 : max = 100;
                  break;
-        case 2 : *max = 1000;
+        case 2 : max = 1000;
                  break;
-        case 3 : *max = 10000;
+        case 3 : max = 10000;
                  break;
-        default : *max = 100;
+        default : max = 100;
                   break;
     }
-    *nb = (rand() % (*max - MIN + 1)) + MIN; /* Génération du nombre aléatoire entre MAX - MIN */
+    *nb = (rand() % (max - MIN + 1)) + MIN; /* Génération du nombre aléatoire entre MAX - MIN */
 }
 /*
     Fonction lorsque le joueur gagne
@@ -172,29 +165,38 @@ void solo_win(int * nb, int * essai)
 /*
     Fonction de contrôle du mode solo
 */
-void solo_control(int * nb, int * difficulte, int * max, int * essai, int * continuer, int * init)
+void solo_control(int * nb, int * essai, int * continuer, int * init)
 {
+    int saisie;
     int x;
     char reponse_continu;
-    printf("Quel est le nombre ? ");
-    scanf("%d", &x);
+    text_color(11, 0); /* On change la couleur du texte */
+    /* Boucle pour demander le nombre, de façon sécurisée (si l'utilisateur entre autre chose, on lui redemande le nombre) */
+    do
+    {
+        printf("Quel est le nombre ? ");
+        saisie = scanf("%d", &x);
+        scanf("%*[^\n]"); /* On vide le buffer (mémoire tampon) */
+    }while(saisie != 1);
+
+    text_color(7, 0); /* On remet la couleur de base */
     if (x > *nb)
     {
-        printf("C'est moins !\n"); /* On affiche au joueur que le nombre mystère est inférieur à ce qu'il a entré */
+        puts("C'est moins !"); /* On affiche au joueur que le nombre mystère est inférieur à ce qu'il a entré */
         *essai = *essai + 1; /* On ajoute +1 à la variable essai */
     } else if (x < *nb)
     {
-        printf("C'est plus !\n"); /* On affiche au joueur que le nombre mystère est supérieur à ce qu'il a entré */
+        puts("C'est plus !"); /* On affiche au joueur que le nombre mystère est supérieur à ce qu'il a entré */
         *essai = *essai + 1; /* On ajoute +1 à la variable essai */
     } else if (x == *nb)
     {
-        solo_win(&*nb, &*essai);
+        solo_win(nb, essai);
         printf("Veux-tu rejouer ? (Y/N) ");
         scanf(" %c", &reponse_continu);
         if (reponse_continu == 'y' || reponse_continu == 'Y')
         {
-            solo_start(&*init, &*difficulte, &*max, &*nb, &*essai);
-        } else if (reponse_continu == 'n' || reponse_continu == 'N'){
+            solo_start(init, nb, essai);
+        } else{
             *continuer = 0;
         }
     }
@@ -214,26 +216,26 @@ void meister(void)
     int continuer = 1; /* Valeur booléenne qui permet de controler la boucle du jeu */
     int init = 1;
     /* Un peu d'art, pour plus de fun */
-    printf(" /$$      /$$         /$$           /$$                             /$$      /$$               /$$ \n");
-    printf("| $$$    /$$$        |__/          | $$                            | $$$    /$$$              | $$         \n");
-    printf("| $$$$  /$$$$ /$$$$$$ /$$ /$$$$$$$/$$$$$$   /$$$$$$  /$$$$$$       | $$$$  /$$$$ /$$$$$$  /$$$$$$$ /$$$$$$ \n");
-    printf("| $$ $$/$$ $$/$$__  $| $$/$$_____|_  $$_/  /$$__  $$/$$__  $$      | $$ $$/$$ $$/$$__  $$/$$__  $$/$$__  $$\n");
-    printf("| $$  $$$| $| $$$$$$$| $|  $$$$$$  | $$   | $$$$$$$| $$  \\__/      | $$  $$$| $| $$  \\ $| $$  | $| $$$$$$$$\n");
-    printf("| $$\\  $ | $| $$_____| $$\\____  $$ | $$ /$| $$_____| $$            | $$\\  $ | $| $$  | $| $$  | $| $$_____/\n");
-    printf("| $$ \\/  | $|  $$$$$$| $$/$$$$$$$/ |  $$$$|  $$$$$$| $$            | $$ \\/  | $|  $$$$$$|  $$$$$$|  $$$$$$$\n");
-    printf("|__/     |__/\\_______|__|_______/   \\___/  \\_______|__/            |__/     |__/\\______/ \\_______/\\_______/\n\n\n\n");
+    puts(" /$$      /$$         /$$           /$$                             /$$      /$$               /$$ ");
+    puts("| $$$    /$$$        |__/          | $$                            | $$$    /$$$              | $$         ");
+    puts("| $$$$  /$$$$ /$$$$$$ /$$ /$$$$$$$/$$$$$$   /$$$$$$  /$$$$$$       | $$$$  /$$$$ /$$$$$$  /$$$$$$$ /$$$$$$ ");
+    puts("| $$ $$/$$ $$/$$__  $| $$/$$_____|_  $$_/  /$$__  $$/$$__  $$      | $$ $$/$$ $$/$$__  $$/$$__  $$/$$__  $$");
+    puts("| $$  $$$| $| $$$$$$$| $|  $$$$$$  | $$   | $$$$$$$| $$  \\__/      | $$  $$$| $| $$  \\ $| $$  | $| $$$$$$$$");
+    puts("| $$\\  $ | $| $$_____| $$\\____  $$ | $$ /$| $$_____| $$            | $$\\  $ | $| $$  | $| $$  | $| $$_____/");
+    puts("| $$ \\/  | $|  $$$$$$| $$/$$$$$$$/ |  $$$$|  $$$$$$| $$            | $$ \\/  | $|  $$$$$$|  $$$$$$|  $$$$$$$");
+    puts("|__/     |__/\\_______|__|_______/   \\___/  \\_______|__/            |__/     |__/\\______/ \\_______/\\_______/\n\n\n");
     /* Fin de l'art incroyable ! */
-    printf("Hey ! J'espere que vous allez bien et que vous etes pret pour vous foutre dessus !\n");
+    puts("Hey ! J'espere que vous allez bien et que vous etes pret pour vous foutre dessus !\n");
     /* Lancement de la boucle infinie, jusqu'à que le joueur n°2 trouve le nombre mystère */
-    while(continuer == 1)
+    while(continuer)
     {
-        if (init == 1) /* On initialise le jeu */
+        if (init) /* On initialise le jeu */
         {
             meister_start(&nb, &max, &essai, &init);
         }
         meister_control(&nb, &max, &x, &essai, &init, &continuer);
     }
-    printf("C'etait cool cette parti ! N'hesitez pas a revenir quand vous voulez !\n");
+    puts("C'etait cool cette parti ! N'hesitez pas a revenir quand vous voulez !\n");
 }
 /*
     Fonction de lancement de la partie
@@ -242,16 +244,16 @@ void meister(void)
 void meister_start(int * nb, int * max, int * essai, int * init)
 {
     *essai = *init = 0;
-    printf("Joueur 1, choisissez un nombre mystere : ");
-    scanf("%d", &*nb);
-    printf("Joueur 1, choisissez le nombre maximum de coups (minimum 1) : ");
-    scanf("%d", &*max);
+    puts("Joueur 1, choisissez un nombre mystere : ");
+    scanf("%d", nb);
+    puts("Joueur 1, choisissez le nombre maximum de coups (minimum 1) : ");
+    scanf("%d", max);
     /* Contrôle du minimum de coups */
     if (*max < 1)
     {
         *max = 1;
     }
-    printf("Joueur 2 ! C'est votre tour ! Trouvez le nombre mystere !\n");
+    puts("Joueur 2 ! C'est votre tour ! Trouvez le nombre mystere !\n");
 }
 /*
     Fonction gagné / perdu
@@ -288,7 +290,7 @@ void meister_control(int * nb, int * max, int * x, int * essai, int * init, int 
     {
         meister_win(0, *max, *nb); /* Le joueur a perdu */
         /* On invite les joueurs à rejouer :) */
-        printf("Vous voulez rejouer ? (Y/N) ");
+        puts("Vous voulez rejouer ? (Y/N) ");
         scanf(" %c", &reponse_continu);
         if (reponse_continu == 'y' || reponse_continu == 'Y')
         {
@@ -299,20 +301,20 @@ void meister_control(int * nb, int * max, int * x, int * essai, int * init, int 
         }
     }
     /* On demande au joueur 2 le nombre mystère */
-    printf("Quel est le nombre ? ");
-    scanf("%d", &*x);
+    puts("Quel est le nombre ? ");
+    scanf("%d", x);
     if (*x > *nb)
      {
-        printf("C'est moins !\n"); /* On affiche au joueur que le nombre mystère est inférieur à ce qu'il a entré */
+        puts("C'est moins !\n"); /* On affiche au joueur que le nombre mystère est inférieur à ce qu'il a entré */
         *essai = *essai + 1; /* On ajoute +1 à la variable essai */
     } else if (*x < *nb)
     {
-        printf("C'est plus !\n"); /* On affiche au joueur que le nombre mystère est supérieur à ce qu'il a entré */
+        puts("C'est plus !\n"); /* On affiche au joueur que le nombre mystère est supérieur à ce qu'il a entré */
         *essai = *essai + 1; /* On ajoute +1 à la variable essai */
     } else if (*x == *nb)
     {
         meister_win(1, *essai, *nb);
-        printf("Vous voulez rejouer ? (Y/N) ");
+        puts("Vous voulez rejouer ? (Y/N) ");
         scanf(" %c", &reponse_continu);
         if (reponse_continu == 'y' || reponse_continu == 'Y')
         {
@@ -343,24 +345,24 @@ void duel(void)
     int init = 1; /* Valeur booléenne qui nous permet de savoir quand il faut initialiser le jeu ou non */
     int continuer = 1; /* Valeur booléenne qui permet de controler la boucle du jeu */
     /* Un peu d'art, pour plus de fun */
-    printf(" _______   __    __   _______  __          __  \n");
-    printf("|       \\ |  |  |  | |   ____||  |        |  | \n");
-    printf("|  .--.  ||  |  |  | |  |__   |  |        |  | \n");
-    printf("|  |  |  ||  |  |  | |   __|  |  |        |  | \n");
-    printf("|  '--'  ||  `--'  | |  |____ |  `----.   |__| \n");
-    printf("|_______/  \\______/  |_______||_______|   (__) \n\n\n\n");
+    puts(" _______   __    __   _______  __          __  ");
+    puts("|       \\ |  |  |  | |   ____||  |        |  | ");
+    puts("|  .--.  ||  |  |  | |  |__   |  |        |  | ");
+    puts("|  |  |  ||  |  |  | |   __|  |  |        |  | ");
+    puts("|  '--'  ||  `--'  | |  |____ |  `----.   |__| ");
+    puts("|_______/  \\______/  |_______||_______|   (__) \n\n\n");
     /* Fin de l'art incroyable ! */
-    printf("Youhouuuuuu ! C'est l'heure du du-du-du-du-du-duel !\n");
+    puts("Youhouuuuuu ! C'est l'heure du du-du-du-du-du-duel !\n");
     srand(time(NULL)); /* Initialisation du générateur de nombres aléatoires */
     /* Lancement de la boucle infinie, jusqu'à que le joueur n°2 trouve le nombre mystère */
-    while(continuer == 1)
+    while(continuer)
     {
-        if (init == 1)
+        if (init)
         {
             duel_start(&i, &nb1, &nb2, &start, &essai1, &essai2, &init);
         }
         i++; /* On incrémente i de 1 à chaque tour de la boucle */
-        if (start == 1) /* Dans le cas pù c'est le joueur 1 qui doit commencer */
+        if (start) /* Dans le cas pù c'est le joueur 1 qui doit commencer */
         {
             if (i % 2 == 1) /* Si i est impair, alors c'est le tour du joueur 1 */
             {
@@ -386,7 +388,7 @@ void duel(void)
 
     }
     text_color(7, 0);
-    printf("C'etait cool cette parti ! N'hesitez pas a revenir quand vous voulez !\n");
+    puts("C'etait cool cette parti ! N'hesitez pas a revenir quand vous voulez !\n");
 }
 /*
     Fonction de lancement de partie
@@ -398,24 +400,24 @@ void duel_start(int * i, int * nb1, int * nb2, int * start, int * essai1, int * 
     text_color(7, 0); /* Réinsitalisation de la couleur de l'écriture dans la console. */
     *essai1 = *essai2 = *i = 0; /* Réinitialisation de la variable du nombre d'essais et de I ( le compteur ) */
     /* On réinvite le joueur 1 à définir un nombre mystère et un nombre de coups */
-    printf("Joueur 1, choisissez un nombre mystere : ");
-    scanf("%d", &*nb1); /* On place la réponse dans la variable nb1 */
-    printf("Joueur 2, choisissez un nombre mystere : ");
-    scanf("%d", &*nb2); /* On place la réponse dans la variable nb2 */
-    printf("\n\n\n\n\nTres bien ! Je vais tirer au sort celui qui va commencer !\n");
-    printf("...\n");
-    printf("...\n");
+    puts("Joueur 1, choisissez un nombre mystere : ");
+    scanf("%d", nb1); /* On place la réponse dans la variable nb1 */
+    puts("Joueur 2, choisissez un nombre mystere : ");
+    scanf("%d", nb2); /* On place la réponse dans la variable nb2 */
+    puts("\n\n\n\n\nTres bien ! Je vais tirer au sort celui qui va commencer !\n");
+    puts("...\n");
+    puts("...\n");
     *start = (rand() % (2 - 1 + 1)) + 1; /* Génération du nombre aléatoire entre 1 et 2, ce nombre déterminera celui qui va commencer */
-    printf("C'est bon ! Celui qui vas commencer sera... ... ");
-    if (*start == 1)
+    puts("C'est bon ! Celui qui vas commencer sera... ... ");
+    if (*start)
     {
         text_color(10, 0);
-        printf("le Joueur 1 !\n");
+        puts("le Joueur 1 !\n");
         text_color(7, 0); /* Réinitialisation de l'écriture dans la console */
     } else if (*start == 2)
     {
         text_color(12, 0);
-        printf("le Joueur 2 !\n");
+        puts("le Joueur 2 !\n");
         text_color(7, 0); /* Réinitialisation de l'écriture dans la console */
     }
     /* Tout c'est bien déroulé, le jeu est initialisé, on peut mettre init à 0 */
@@ -460,6 +462,7 @@ void duel_win(int winner, int mystere, int essai, int looser, int essai2, int nb
     printf("Le nombre mystere du joueur %d etait : %d\n", looser, mystere);
     /* On affiche aux joueurs le gagnant avec des petites "statistiques" */
     printf("%s C'est le joueur %d qui a gagne ! Il a trouve le nombre mystere en %d coups !\n", etonnements[i], winner, essai);
+    printf("Le joueur %d lui, a effectue %d essais mais n'a pas trouve le nombre mystere !\n", looser, essai2);
 }
 /*
     Fonction de control si le nombre que le joueur entre est le bon
@@ -468,19 +471,19 @@ void duel_control(int joueur, int adversaire, int * x, int * nb1, int * nb2, int
 {
     char reponse_continu; /* Réponse des joueurs pour continuer ou non */
     printf("Joueur %d, quel est le nombre ? ", joueur);
-    scanf("%d", &*x);
+    scanf("%d", x);
     if (*x > *nb2)
     {
-        printf("C'est moins !\n");
+        puts("C'est moins !\n");
         *essai1 = *essai1 + 1; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
     } else if (*x < *nb2)
     {
-        printf("C'est plus !\n");
+        puts("C'est plus !\n");
         *essai1 = *essai1 + 1; /* On incrémente le nombre d'essais du joueur de 1 à chaque fois qu'il se trompe */
     } else if (*x == *nb2)
     {
         duel_win(joueur, *nb2, *essai1+ 1, adversaire, *essai2, *nb1);
-        printf("Vous voulez rejouer ? (Y/N) ");
+        puts("Vous voulez rejouer ? (Y/N) ");
         scanf(" %c", &reponse_continu);
         if (reponse_continu == 'y' || reponse_continu == 'Y')
         {
