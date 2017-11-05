@@ -13,6 +13,9 @@
     Les fonctions
 */
 void text_color(int t,int f);
+void nb_secure(int *);
+void mode_choose(int *);
+void mode_restart(int *, int *);
 /*      MODE SOLO    */
 void solo(void); /* Fonction du jeu en solo */
 void solo_start(int *, int *, int *); /* Fonction d'initialisation du mode Solo */
@@ -22,7 +25,7 @@ void solo_control(int *, int *, int *, int *); /* Fonction de controle du mode s
 void meister(void); /* Fonction du jeu en Meister Mode */
 void meister_start(int *, int *, int *, int *); /* Fonction de lancement du mode Meister */
 void meister_win(int, int, int); /* Fonction notification gagné / perdu */
-void meister_control(int *, int *, int *, int *, int *, int *); /* Fonction de contrôle du mode Meister */
+void meister_control(int *, int *, int *, int *, int *); /* Fonction de contrôle du mode Meister */
 /*      MODE DUEL    */
 void duel(void); /* Fonction du jeu en mode Duel ! */
 void duel_start(int *, int *, int *, int *, int *, int *, int *); /* Fonction de lancement du duel */
@@ -31,7 +34,8 @@ void duel_control(int, int, int *, int *, int *, int *, int *, int *, int *, int
 
 int main(void)
 {
-    int mode; /* Mode de jeu que l'utilisateur a choisi */
+    int mode_init = 1; /* Variable pour initialiser le choix des modes de jeu */
+    int continuer = 1;
 
     /*
     *   Début du programme
@@ -39,6 +43,45 @@ int main(void)
     /* Formules de politesse et choix du mode de jeu par le joueur */
     puts("Bonjour jeune joueur des contrees lointaines !\n");
     puts("Si tu es ici, c'est que tu veux te mesurer a moi !\nModes de jeu disponibles :\n1. Solo\n2. Meister Mode\n3. Duel");
+    while(continuer)
+    {
+        if (mode_init)
+        {
+            mode_choose(&mode_init);
+        }
+        mode_restart(&mode_init, &continuer);
+    }
+    puts("C'etait incroyable de jouer avec vous ! Au revoir !");
+    return 0;
+}
+/*
+    Fonction de changement de la couleur du texte
+*/
+void text_color(int t,int f)
+{
+    HANDLE H=GetStdHandle(STD_OUTPUT_HANDLE);
+             SetConsoleTextAttribute(H, (f * 16 + t));
+}
+/*
+    Fonction de demande du nombre sécurisée
+*/
+void nb_secure(int * x)
+{
+    int saisie;
+    do
+    {
+        printf("Quel est le nombre ? "); /* On demande le nombre dans que la réponse n'est pas satisfaisante */
+        saisie = scanf("%d", x);
+        scanf("%*[^\n]"); /* On vide le buffer (mémoire tampon) */
+    }while(saisie != 1);
+}
+/*
+    Fonction pour choisir le mode de jeu
+*/
+void mode_choose(int * mode_init)
+{
+    int mode; /* Mode de jeu que l'utilisateur a choisi */
+    *mode_init = 0;
     printf("Mode de jeu souhaite (1, 2 ou 3) : ");
     scanf("%d", &mode); /* On met la réponse dans la variable mode */
     if (mode == 2)
@@ -58,16 +101,25 @@ int main(void)
         puts("Le but du jeu est donc de trouver ce nombre avec le moins d'essais possible !\n");
         solo();
     }
-    return 0;
 }
+
 /*
-    Fonction de changement de la couleur du texte
+    Fonction de restart du jeu
 */
-void text_color(int t,int f)
+void mode_restart(int * mode_init, int * continuer)
 {
-    HANDLE H=GetStdHandle(STD_OUTPUT_HANDLE);
-             SetConsoleTextAttribute(H, (f * 16 + t));
+    char x;
+    printf("Voulez-vous continuer à jouer ? (O / N) "); /* On demande le nombre dans que la réponse n'est pas satisfaisante */
+    scanf("%c", &x);
+    if (x == 'o' || x == 'O')
+    {
+        *mode_init = 1;
+    } else if (x == 'n' || x == 'N')
+    {
+        *continuer = 0;
+    }
 }
+
 /* Fonction du jeu en solo */
 void solo(void)
 {
@@ -171,13 +223,8 @@ void solo_control(int * nb, int * essai, int * continuer, int * init)
     int x;
     char reponse_continu;
     text_color(11, 0); /* On change la couleur du texte */
-    /* Boucle pour demander le nombre, de façon sécurisée (si l'utilisateur entre autre chose, on lui redemande le nombre) */
-    do
-    {
-        printf("Quel est le nombre ? ");
-        saisie = scanf("%d", &x);
-        scanf("%*[^\n]"); /* On vide le buffer (mémoire tampon) */
-    }while(saisie != 1);
+    /* On demande au joueur le nombre mystère, avec la fonction nb_secure */
+    nb_secure(&x);
 
     text_color(7, 0); /* On remet la couleur de base */
     if (x > *nb)
@@ -191,12 +238,13 @@ void solo_control(int * nb, int * essai, int * continuer, int * init)
     } else if (x == *nb)
     {
         solo_win(nb, essai);
-        printf("Veux-tu rejouer ? (Y/N) ");
+        printf("Veux-tu rejouer ? (O / N) : ");
         scanf(" %c", &reponse_continu);
-        if (reponse_continu == 'y' || reponse_continu == 'Y')
+        if (reponse_continu == 'o' || reponse_continu == 'O')
         {
-            solo_start(init, nb, essai);
-        } else{
+            *init = 1;
+        } else if (reponse_continu == 'n' || reponse_continu == 'N')
+        {
             *continuer = 0;
         }
     }
@@ -211,7 +259,6 @@ void meister(void)
     */
     int nb; /* Nombre que le joueur 1 choisi */
     int max; /* Nombre de coups maximum, défini par le joueur n°1 (minimum de 1) */
-    int x; /* Nombre que le joueur 2 va entrer */
     int essai = 0; /* Nombre d'essais que le joueur n°2 a fait avant de trouver le nombre mystère */
     int continuer = 1; /* Valeur booléenne qui permet de controler la boucle du jeu */
     int init = 1;
@@ -233,7 +280,7 @@ void meister(void)
         {
             meister_start(&nb, &max, &essai, &init);
         }
-        meister_control(&nb, &max, &x, &essai, &init, &continuer);
+        meister_control(&nb, &max, &essai, &init, &continuer);
     }
     puts("C'etait cool cette parti ! N'hesitez pas a revenir quand vous voulez !\n");
 }
@@ -244,16 +291,18 @@ void meister(void)
 void meister_start(int * nb, int * max, int * essai, int * init)
 {
     *essai = *init = 0;
-    puts("Joueur 1, choisissez un nombre mystere : ");
+    text_color(10, 0);
+    printf("Joueur 1, choisissez un nombre mystere : ");
     scanf("%d", nb);
-    puts("Joueur 1, choisissez le nombre maximum de coups (minimum 1) : ");
+    printf("Joueur 1, choisissez le nombre maximum de coups (minimum 1) : ");
     scanf("%d", max);
     /* Contrôle du minimum de coups */
     if (*max < 1)
     {
         *max = 1;
     }
-    puts("Joueur 2 ! C'est votre tour ! Trouvez le nombre mystere !\n");
+    text_color(12, 0);
+    puts("Joueur 2 ! C'est votre tour ! Trouvez le nombre mystere !");
 }
 /*
     Fonction gagné / perdu
@@ -283,11 +332,13 @@ void meister_win(int status, int essais, int mystere)
 /*
     Fonction de contrôle mode Meister
 */
-void meister_control(int * nb, int * max, int * x, int * essai, int * init, int * continuer)
+void meister_control(int * nb, int * max, int * essai, int * init, int * continuer)
 {
+    int x;
     char reponse_continu;
     if (*essai >= *max) /* Si le nombre d'essais dépasse le nombre que le joueur 1 a défini, on arrête la boucle et on notifie le joueur qu'il a perdu ! */
     {
+        text_color(7, 0);
         meister_win(0, *max, *nb); /* Le joueur a perdu */
         /* On invite les joueurs à rejouer :) */
         puts("Vous voulez rejouer ? (Y/N) ");
@@ -300,18 +351,19 @@ void meister_control(int * nb, int * max, int * x, int * essai, int * init, int 
             continuer = 0;
         }
     }
+
     /* On demande au joueur 2 le nombre mystère */
-    puts("Quel est le nombre ? ");
-    scanf("%d", x);
-    if (*x > *nb)
+    text_color(12, 0);
+    nb_secure(&x);
+    if (x > *nb)
      {
-        puts("C'est moins !\n"); /* On affiche au joueur que le nombre mystère est inférieur à ce qu'il a entré */
+        puts("C'est moins !"); /* On affiche au joueur que le nombre mystère est inférieur à ce qu'il a entré */
         *essai = *essai + 1; /* On ajoute +1 à la variable essai */
-    } else if (*x < *nb)
+    } else if (x < *nb)
     {
-        puts("C'est plus !\n"); /* On affiche au joueur que le nombre mystère est supérieur à ce qu'il a entré */
+        puts("C'est plus !"); /* On affiche au joueur que le nombre mystère est supérieur à ce qu'il a entré */
         *essai = *essai + 1; /* On ajoute +1 à la variable essai */
-    } else if (*x == *nb)
+    } else if (x == *nb)
     {
         meister_win(1, *essai, *nb);
         puts("Vous voulez rejouer ? (Y/N) ");
