@@ -14,8 +14,8 @@
 */
 void text_color(int t,int f);
 void nb_secure(int *);
-void mode_choose(int *);
-void mode_restart(int *, int *);
+void mode_choose(int *, int *);
+void mode_restart(int *, int *, int *);
 /*      MODE SOLO    */
 void solo(void); /* Fonction du jeu en solo */
 void solo_start(int *, int *, int *); /* Fonction d'initialisation du mode Solo */
@@ -30,11 +30,12 @@ void meister_control(int *, int *, int *, int *, int *); /* Fonction de contrôl
 void duel(void); /* Fonction du jeu en mode Duel ! */
 void duel_start(int *, int *, int *, int *, int *, int *, int *); /* Fonction de lancement du duel */
 void duel_win(int, int, int, int, int, int); /* Fonction lorsqu'un joueur gagne le duel */
-void duel_control(int, int, int *, int *, int *, int *, int *, int *, int *, int *); /* Fonction de controle du mode DUEL */
+void duel_control(int, int, int *, int *, int *, int *, int *, int *, int *); /* Fonction de controle du mode DUEL */
 
 int main(void)
 {
     int mode_init = 1; /* Variable pour initialiser le choix des modes de jeu */
+    int mode_play = 0; /* Variable pour demander si on relance le jeu ou non */
     int continuer = 1;
 
     /*
@@ -47,9 +48,11 @@ int main(void)
     {
         if (mode_init)
         {
-            mode_choose(&mode_init);
+            mode_choose(&mode_init, &mode_play);
+        } else if (mode_play)
+        {
+            mode_restart(&mode_play, &mode_init, &continuer);
         }
-        mode_restart(&mode_init, &continuer);
     }
     puts("C'etait incroyable de jouer avec vous ! Au revoir !");
     return 0;
@@ -78,7 +81,7 @@ void nb_secure(int * x)
 /*
     Fonction pour choisir le mode de jeu
 */
-void mode_choose(int * mode_init)
+void mode_choose(int * mode_init, int * mode_play)
 {
     int mode; /* Mode de jeu que l'utilisateur a choisi */
     *mode_init = 0;
@@ -89,10 +92,12 @@ void mode_choose(int * mode_init)
         puts("Je comprends... Tu as trop peur de me defier, tu joues donc contre moins fort... C'est tout a ton honneur :/\n\nLe mode de jeu \"Meister Mode\" est super !\nIl y a deux joueur : le maitre de jeu et le joueur\nLe but du maître de jeu est de choisir un nombre mytere que le joueur ne trouvera pas.");
         puts("Le maitre de jeu defini aussi le nombre de coups maximum que le joueur peut effectuer avant de trouver le nombre.\nLe but du joueur est tout simplement de trouver le nombre mystere en faisant le moins de coups possible !\n\n\n\n");
         meister();
+        *mode_play = 1; /* On demande au joueur s'il veut changer de mode de jeu */
     } else if (mode == 3)
     {
         puts("Le mode de jeu \"Duel\" est cooooo-oool !!\nDeux joueurs s'affrontent :\nIls doivent trouver le nombre mystère de leur adversaire le plus rapidement possible !.\nBonne partie !\n\n\n\n");
         duel();
+        *mode_play = 1; /* On demande au joueur s'il veut changer de mode de jeu */
     } else
     {
         puts("Le mode de jeu solo est tres simple !");
@@ -100,17 +105,20 @@ void mode_choose(int * mode_init)
         puts("Il existe plusieurs niveau de difficulté : dans le niveau facile, l'ordinateur choisi un nombre entre 1 et 100\n                                            dans le niveau moyen, l'ordinateur choisi un nombre entre 1 et 1,000\n                                            dans le niveau difficile, l'ordinateur choisi un nombre entre 1 et 10,000\n");
         puts("Le but du jeu est donc de trouver ce nombre avec le moins d'essais possible !\n");
         solo();
+        *mode_play = 1; /* On demande au joueur s'il veut changer de mode de jeu */
     }
 }
 
 /*
     Fonction de restart du jeu
 */
-void mode_restart(int * mode_init, int * continuer)
+void mode_restart(int * mode_play, int * mode_init, int * continuer)
 {
     char x;
-    printf("Voulez-vous continuer à jouer ? (O / N) "); /* On demande le nombre dans que la réponse n'est pas satisfaisante */
-    scanf("%c", &x);
+   *mode_play = 0;
+    printf("Voulez-vous continuer a jouer ? (O / N) : "); /* On demande le nombre dans que la réponse n'est pas satisfaisante */
+    scanf(" %c", &x);
+
     if (x == 'o' || x == 'O')
     {
         *mode_init = 1;
@@ -165,7 +173,7 @@ void solo_start(int * init, int * nb, int * essai)
     /* Réinitialisation des essais du joueur et mise à 0 de l'initialisation */
     *essai = *init = 0;
     puts("Choisissez un niveau de difficulte :\n");
-    puts("1 = Facile\n2 = Moyen\n3 = Difficile");
+    puts("    1 = Facile\n    2 = Moyen\n    3 = Difficile");
     printf("Niveau de difficulte : ");
     scanf("%d", &difficulte);
     /* Switch pour définir la valeur de max (= valeur maximale du nombre mystère) */
@@ -219,7 +227,6 @@ void solo_win(int * nb, int * essai)
 */
 void solo_control(int * nb, int * essai, int * continuer, int * init)
 {
-    int saisie;
     int x;
     char reponse_continu;
     text_color(11, 0); /* On change la couleur du texte */
@@ -336,6 +343,10 @@ void meister_control(int * nb, int * max, int * essai, int * init, int * continu
 {
     int x;
     char reponse_continu;
+
+    /* On demande au joueur 2 le nombre mystère */
+    text_color(12, 0);
+    nb_secure(&x);
     if (*essai >= *max) /* Si le nombre d'essais dépasse le nombre que le joueur 1 a défini, on arrête la boucle et on notifie le joueur qu'il a perdu ! */
     {
         text_color(7, 0);
@@ -348,15 +359,10 @@ void meister_control(int * nb, int * max, int * essai, int * init, int * continu
             /* On réinitialise le jeu */
             *init = 1;
         } else if (reponse_continu == 'n' || reponse_continu == 'N'){
-            continuer = 0;
+            *continuer = 0;
         }
-    }
-
-    /* On demande au joueur 2 le nombre mystère */
-    text_color(12, 0);
-    nb_secure(&x);
-    if (x > *nb)
-     {
+    } else if (x > *nb)
+    {
         puts("C'est moins !"); /* On affiche au joueur que le nombre mystère est inférieur à ce qu'il a entré */
         *essai = *essai + 1; /* On ajoute +1 à la variable essai */
     } else if (x < *nb)
@@ -366,6 +372,7 @@ void meister_control(int * nb, int * max, int * essai, int * init, int * continu
     } else if (x == *nb)
     {
         meister_win(1, *essai, *nb);
+        text_color(7, 0);
         puts("Vous voulez rejouer ? (Y/N) ");
         scanf(" %c", &reponse_continu);
         if (reponse_continu == 'y' || reponse_continu == 'Y')
@@ -419,22 +426,22 @@ void duel(void)
             if (i % 2 == 1) /* Si i est impair, alors c'est le tour du joueur 1 */
             {
                 text_color(10, 0);
-                duel_control(1, 2, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer, &init);
+                duel_control(1, 2, &x, &nb1, &nb2, &essai1, &essai2, &continuer, &init);
             } else if (i % 2 == 0) /* Si i est pair, c'est au tour du joueur 2 */
             {
                 text_color(12, 0);
-                duel_control(2, 1, &x, &nb2, &nb1, &essai2, &essai1, &start, &continuer, &init);
+                duel_control(2, 1, &x, &nb2, &nb1, &essai2, &essai1, &continuer, &init);
             }
         } else if (start == 2) /* Sinon, si c'est le joueur 2 qui doit commencer */
         {
             if (i % 2 == 1) /* Si i est impair, c'est le tour du joueur 2 */
             {
                 text_color(12, 0);
-                duel_control(2, 1, &x, &nb2, &nb1, &essai2, &essai1, &start, &continuer, &init);
+                duel_control(2, 1, &x, &nb2, &nb1, &essai2, &essai1, &continuer, &init);
             } else if (i % 2 == 0) /* Si i est pair, c'est le tour du joueur 1 */
             {
                 text_color(10, 0);
-                duel_control(1, 2, &x, &nb1, &nb2, &essai1, &essai2, &start, &continuer, &init);
+                duel_control(1, 2, &x, &nb1, &nb2, &essai1, &essai2, &continuer, &init);
             }
         }
 
@@ -519,7 +526,7 @@ void duel_win(int winner, int mystere, int essai, int looser, int essai2, int nb
 /*
     Fonction de control si le nombre que le joueur entre est le bon
 */
-void duel_control(int joueur, int adversaire, int * x, int * nb1, int * nb2, int * essai1, int * essai2, int * start, int * continuer, int * init)
+void duel_control(int joueur, int adversaire, int * x, int * nb1, int * nb2, int * essai1, int * essai2, int * continuer, int * init)
 {
     char reponse_continu; /* Réponse des joueurs pour continuer ou non */
     printf("Joueur %d, quel est le nombre ? ", joueur);
