@@ -466,7 +466,8 @@ void duel_start(int * i, int * nb1, int * nb2, int * start, int * essai1, int * 
     system("cls"); // evitons la triche
     puts("Joueur 2, choisissez un nombre mystere : ");
     scanf("%d", nb2); /* On place la réponse dans la variable nb2 */
-    puts("\n\n\n\n\nTres bien ! Je vais tirer au sort celui qui va commencer !\n");
+    system("cls"); // evitons la triche
+    puts("Tres bien ! Je vais tirer au sort celui qui va commencer !\n");
     puts("...\n");
     puts("...\n");
     *start = (rand() % (2 - 1 + 1)) + 1; /* Génération du nombre aléatoire entre 1 et 2, ce nombre déterminera celui qui va commencer */
